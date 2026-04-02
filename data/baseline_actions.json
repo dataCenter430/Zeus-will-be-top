@@ -408,46 +408,9 @@
       "useCase": "VIEW_PENDING_EVENTS",
       "prompt": "Show me the pending calendar events where the earliest date is NOT '2025-12-06'."
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8004/?seed=247",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//a[contains(@href, '/calendar')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(@id, 'toggle-future-events')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
+    "response": null,
+    "status": "error",
+    "error": "",
     "elapsed": 0.0
   },
   {
@@ -729,100 +692,10 @@
       "useCase": "FORWARD_EMAIL",
       "prompt": "Forward the email where the 'to' field does NOT CONTAIN 'mxg' and the 'body' field CONTAINS 'offee some'."
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8005/?seed=210",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//input[contains(@id, 'mail-search')]",
-            "case_sensitive": false
-          },
-          "text": "Jennifer Morris Hey! Long time no see"
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//p[contains(text(), 'Jennifer Morris')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(@id, 'forward-button')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//textarea[contains(@id, 'compose-body') or contains(@id, 'body-input')]",
-            "case_sensitive": false
-          },
-          "text": "offee some"
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//input[contains(@aria-label, 'Recipient email address')]",
-            "case_sensitive": false
-          },
-          "text": "lojgg"
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(text(), 'Dispatch')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
-    "elapsed": 1.34
+    "response": null,
+    "status": "error",
+    "error": "",
+    "elapsed": 0.0
   },
   {
     "task": {
@@ -843,121 +716,10 @@
       "useCase": "ADD_EVENT",
       "prompt": "Add an event where the location is NOT equal to 'Gym', all_day equals 'False', busy is NOT equal to 'False', recurrence is NOT equal to 'None', the title CONTAINS 'sso', and the date is less than or equal to '2026-04-01'."
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8010/?seed=938",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//*[contains(@id, 'add-event-button')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//*[contains(@id, 'event-name-field')]",
-            "case_sensitive": false
-          },
-          "text": "sso"
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//*[contains(@id, 'event-date')]",
-            "case_sensitive": false
-          },
-          "text": "2026-04-01"
-        },
-        {
-          "type": "SelectDropDownOptionAction",
-          "selector": {
-            "type": "attributeValueSelector",
-            "attribute": "id",
-            "value": "recurrence",
-            "case_sensitive": false
-          },
-          "text": "daily",
-          "timeout_ms": 1000
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//*[contains(@id, 'location-field')]",
-            "case_sensitive": false
-          },
-          "text": "vzdje"
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(text(),'People') or contains(text(),'Guests') or contains(text(),'Participants') or contains(text(),'Attendees')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(text(), 'Options') or contains(text(), 'Settings') or contains(text(), 'Preferences') or contains(text(), 'Extras')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//*[contains(@id, 'allday-field')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "attributeValueSelector",
-            "attribute": "type",
-            "value": "submit",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
-    "elapsed": 4.26
+    "response": null,
+    "status": "error",
+    "error": "Server error '500 Internal Server Error' for url 'http://127.0.0.1:6000/solve_task'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500",
+    "elapsed": 2.37
   },
   {
     "task": {
@@ -1226,46 +988,10 @@
       "useCase": "SEARCH_PRODUCT",
       "prompt": "Search for products with the query equal to 'Monitor Arm Stand'"
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8002/?seed=248",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//input[contains(@id, 'product-search')]",
-            "case_sensitive": false
-          },
-          "text": "Monitor Arm Stand"
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(@id, 'submit-search')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
-    "elapsed": 1.31
+    "response": null,
+    "status": "error",
+    "error": "",
+    "elapsed": 0.0
   },
   {
     "task": {
@@ -1508,7 +1234,7 @@
           "selector": {
             "type": "xpathSelector",
             "attribute": null,
-            "value": "//button[contains(text(), 'Eliminar PelÃ­cula')]",
+            "value": "//button[contains(text(), 'Eliminar Película')]",
             "case_sensitive": false
           }
         },
@@ -1823,67 +1549,10 @@
       "useCase": "EMAIL_SAVE_AS_DRAFT",
       "prompt": "Save the email as a draft where the recipient address contains 'tup.ai' and the email body does NOT contain 'oig'."
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8005/?seed=664",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//*[contains(@id, 'compose-launcher')][not(@type='button')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//input[contains(@aria-label, 'Recipient email address')]",
-            "case_sensitive": false
-          },
-          "text": "tup.ai"
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//textarea[contains(@id, 'compose-body') or contains(@id, 'body-input')]",
-            "case_sensitive": false
-          },
-          "text": "uxgza"
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(@id, 'draft-button')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
-    "elapsed": 1.09
+    "response": null,
+    "status": "error",
+    "error": "",
+    "elapsed": 0.0
   },
   {
     "task": {
@@ -1993,61 +1662,10 @@
       "useCase": "QUANTITY_CHANGED",
       "prompt": "Update the quantity of the item in my cart whose title CONTAINS 'ner M5' to a new quantity that is LESS THAN 8."
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8002?seed=458",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//input[contains(@id, 'lookup-input')]",
-            "case_sensitive": false
-          },
-          "text": "Bowflex Max Trainer M5"
-        },
-        {
-          "type": "SendKeysIWAAction",
-          "selector": null,
-          "keys": "Enter"
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(@id, 'view-btn')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "SelectAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//select[contains(@id, 'amount-input')]",
-            "case_sensitive": false
-          },
-          "value": "7"
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
-    "elapsed": 2.09
+    "response": null,
+    "status": "error",
+    "error": "",
+    "elapsed": 0.0
   },
   {
     "task": {
@@ -2084,7 +1702,7 @@
             "value": "//input[contains(@placeholder, 'Search library')]",
             "case_sensitive": false
           },
-          "text": "Les MisÃ©rables"
+          "text": "Les Misérables"
         },
         {
           "type": "SendKeysIWAAction",
@@ -2405,7 +2023,7 @@
           "selector": {
             "type": "xpathSelector",
             "attribute": null,
-            "value": "//button[contains(text(), 'AÃ±adir a lista')]",
+            "value": "//button[contains(text(), 'Añadir a lista')]",
             "case_sensitive": false
           },
           "x": null,
@@ -2841,113 +2459,10 @@
       "useCase": "AUTOLIST_TEAM_ROLE_ASSIGNED",
       "prompt": "Assign role to a team member whose name does NOT contain 'zkf' and ensure the role does NOT contain 'xny'."
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8011/?seed=326",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//*[contains(@id, 'create-team-button')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//*[contains(@id, 'members')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "attributeValueSelector",
-            "attribute": "title",
-            "value": "John Doe",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "SendKeysIWAAction",
-          "selector": null,
-          "keys": "Escape"
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//div[@class='ant-select-selector'][.//input[contains(@id,'roles_')]]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "attributeValueSelector",
-            "attribute": "title",
-            "value": "Developer",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//div[@class='ant-select-selector'][.//input[contains(@id,'roles_')]]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "attributeValueSelector",
-            "attribute": "title",
-            "value": "Admin",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
-    "elapsed": 2.34
+    "response": null,
+    "status": "error",
+    "error": "",
+    "elapsed": 0.0
   },
   {
     "task": {
@@ -3219,47 +2734,10 @@
       "useCase": "CATEGORY_FILTER",
       "prompt": "Filter to show only products in the category 'home'"
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8002/?seed=296",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(@id, 'category-btn')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(., 'Home')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
-    "elapsed": 0.96
+    "response": null,
+    "status": "error",
+    "error": "",
+    "elapsed": 0.0
   },
   {
     "task": {
@@ -3571,47 +3049,10 @@
       "useCase": "SELECT_WEEK",
       "prompt": "Switch to week view in the calendar"
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8010/?seed=696",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "attributeValueSelector",
-            "attribute": "aria-label",
-            "value": "Select calendar view",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "attributeValueSelector",
-            "attribute": "aria-label",
-            "value": "Select Week view",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
-    "elapsed": 0.01
+    "response": null,
+    "status": "error",
+    "error": "Server error '500 Internal Server Error' for url 'http://127.0.0.1:6000/solve_task'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500",
+    "elapsed": 0.0
   },
   {
     "task": {
@@ -3630,7 +3071,7 @@
       "taskId": "aefe56ec-f95f-463e-a7a5-f9eaf00cb171",
       "website": "http://localhost:8008/?seed=940",
       "useCase": "POST_STATUS",
-      "prompt": "Post a status update where the content is NOT 'Attending React Summit next monthâ€”who else is going?'"
+      "prompt": "Post a status update where the content is NOT 'Attending React Summit next month—who else is going?'"
     },
     "response": null,
     "status": "error",
@@ -3814,41 +3255,9 @@
       "useCase": "VIEW_WISHLIST",
       "prompt": "Open my wishlist from the home wishlist preview."
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8002?seed=758",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//a[contains(@href, '/wishlist')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
+    "response": null,
+    "status": "error",
+    "error": "",
     "elapsed": 0.0
   },
   {
@@ -4363,47 +3772,10 @@
       "useCase": "SELECT_DAY",
       "prompt": "Switch to day view in the calendar."
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8010/?seed=471",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "attributeValueSelector",
-            "attribute": "aria-label",
-            "value": "Select calendar view",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "attributeValueSelector",
-            "attribute": "aria-label",
-            "value": "Select Day view",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
-    "elapsed": 0.01
+    "response": null,
+    "status": "error",
+    "error": "Server error '500 Internal Server Error' for url 'http://127.0.0.1:6000/solve_task'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500",
+    "elapsed": 0.0
   },
   {
     "task": {
@@ -4587,61 +3959,10 @@
       "useCase": "QUANTITY_CHANGED",
       "prompt": "Update the quantity in my cart for the item whose title CONTAINS 'ybo' to a new quantity that is GREATER THAN OR EQUAL TO 5."
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8002?seed=489",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//input[contains(@id, 'search-input')]",
-            "case_sensitive": false
-          },
-          "text": "Keychron K8 Pro Keyboard"
-        },
-        {
-          "type": "SendKeysIWAAction",
-          "selector": null,
-          "keys": "Enter"
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(@id, 'product-details-btn')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "SelectAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//select[contains(@id, 'quantity-select')]",
-            "case_sensitive": false
-          },
-          "value": "5"
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
-    "elapsed": 1.44
+    "response": null,
+    "status": "error",
+    "error": "",
+    "elapsed": 0.0
   },
   {
     "task": {
@@ -4686,73 +4007,10 @@
       "useCase": "BOOK_DETAIL",
       "prompt": "Show details for a book where the author is NOT 'H.G. Wells' and the genres field is NOT one of ['Postmodern', 'Poetry']"
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8001?seed=236",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//a[contains(@href, '/search')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//input[contains(@placeholder, 'Find books')]",
-            "case_sensitive": false
-          },
-          "text": "Oryx and Crake"
-        },
-        {
-          "type": "SendKeysIWAAction",
-          "selector": null,
-          "keys": "Tab"
-        },
-        {
-          "type": "SendKeysIWAAction",
-          "selector": null,
-          "keys": "Enter"
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//a[contains(text(), 'Info')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
-    "elapsed": 1.38
+    "response": null,
+    "status": "error",
+    "error": "",
+    "elapsed": 0.0
   },
   {
     "task": {
@@ -4855,7 +4113,7 @@
           "selector": {
             "type": "xpathSelector",
             "attribute": null,
-            "value": "//input[contains(@placeholder, 'Confirma tu contraseÃ±a')]",
+            "value": "//input[contains(@placeholder, 'Confirma tu contraseña')]",
             "case_sensitive": false
           },
           "text": "password123"
@@ -5091,47 +4349,10 @@
       "useCase": "SELECT_WEEK",
       "prompt": "Switch to week view in the calendar."
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8010/?seed=596",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "attributeValueSelector",
-            "attribute": "aria-label",
-            "value": "Select calendar view",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "attributeValueSelector",
-            "attribute": "aria-label",
-            "value": "Select Week view",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
-    "elapsed": 0.0
+    "response": null,
+    "status": "error",
+    "error": "Server error '500 Internal Server Error' for url 'http://127.0.0.1:6000/solve_task'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500",
+    "elapsed": 0.01
   },
   {
     "task": {
@@ -5400,75 +4621,10 @@
       "useCase": "AUTOLIST_SELECT_TASK_PRIORITY",
       "prompt": "Set the priority of this task to 'Medium'."
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8011/?seed=286",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//li[contains(@id, 'sidebar-projects')][1]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(text(), 'Add') or contains(text(), 'Create') or contains(text(), 'Start')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(text(), 'Priority')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[.//span[normalize-space()='Medium']]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
-    "elapsed": 1.59
+    "response": null,
+    "status": "error",
+    "error": "Server error '500 Internal Server Error' for url 'http://127.0.0.1:6000/solve_task'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500",
+    "elapsed": 0.94
   },
   {
     "task": {
@@ -5755,47 +4911,10 @@
       "useCase": "SELECT_MONTH",
       "prompt": "Switch to month view in the calendar."
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8010/?seed=200",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//*[contains(@id, 'view-selector')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "attributeValueSelector",
-            "attribute": "aria-label",
-            "value": "Select Month view",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
-    "elapsed": 0.05
+    "response": null,
+    "status": "error",
+    "error": "Server error '500 Internal Server Error' for url 'http://127.0.0.1:6000/solve_task'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500",
+    "elapsed": 0.01
   },
   {
     "task": {
@@ -5852,218 +4971,10 @@
       "useCase": "REMOVE_FROM_READING_LIST",
       "prompt": "First, login for the following username: '<username>' and password: '<password>' and then remove from reading list a book whose name CONTAINS 'acb'."
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8001?seed=329",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//a[contains(@href, '/signup')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//input[contains(@placeholder, 'Choose a username')]",
-            "case_sensitive": false
-          },
-          "text": "<username>"
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//input[contains(@placeholder, 'Set a password')]",
-            "case_sensitive": false
-          },
-          "text": "<password>"
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//input[contains(@placeholder, 'Re-enter password')]",
-            "case_sensitive": false
-          },
-          "text": "<password>"
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(text(), 'Sign up')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(text(), 'Logout')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//a[contains(@href, '/login')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//input[contains(@placeholder, 'Enter your username')]",
-            "case_sensitive": false
-          },
-          "text": "<username>"
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//input[contains(@placeholder, 'Type your password')]",
-            "case_sensitive": false
-          },
-          "text": "<password>"
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(text(), 'Login')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 3.0,
-          "timeout_seconds": 5.0
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//a[contains(@href, '/search')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//input[contains(@placeholder, 'Lookup titles')]",
-            "case_sensitive": false
-          },
-          "text": "Macbeth"
-        },
-        {
-          "type": "SendKeysIWAAction",
-          "selector": null,
-          "keys": "Tab"
-        },
-        {
-          "type": "SendKeysIWAAction",
-          "selector": null,
-          "keys": "Enter"
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//a[contains(text(), 'View Details')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(@id, 'save-book-btn')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(@id, 'save-book-btn')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
-    "elapsed": 1.45
+    "response": null,
+    "status": "error",
+    "error": "",
+    "elapsed": 0.0
   },
   {
     "task": {
@@ -6180,46 +5091,9 @@
       "useCase": "EMAILS_NEXT_PAGE",
       "prompt": "Go to the next page of emails."
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8005/?seed=46",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(@class, 'inline-flex items-center justify-center gap-2 whitespace-nowrap')][2]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(@class, 'inline-flex items-center justify-center gap-2 whitespace-nowrap')][2]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
+    "response": null,
+    "status": "error",
+    "error": "",
     "elapsed": 0.01
   },
   {
@@ -6432,191 +5306,10 @@
       "useCase": "CANCEL_ADD_EVENT",
       "prompt": "Cancel an event where the title equals 'Contractor meeting', visibility not equals 'Public', description not equals 'Annual eye examination and prescription update', start_time is less than '16:00:00', end_time is greater than '16:30:00', calendar not equals 'Family', location equals 'Museum', attendees equals 'contractor@build.com', and date is greater than '2026-03-12'."
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8010/?seed=762",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//*[contains(@id, 'launch-event-button')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "SelectAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//*[contains(@id, 'event-calendar-selector')]",
-            "case_sensitive": false
-          },
-          "value": "Work"
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//*[contains(@id, 'event-name-input')]",
-            "case_sensitive": false
-          },
-          "text": "Contractor meeting"
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//*[contains(@id, 'date-picker')]",
-            "case_sensitive": false
-          },
-          "text": "2026-03-13"
-        },
-        {
-          "type": "SelectAction",
-          "selector": {
-            "type": "attributeValueSelector",
-            "attribute": "id",
-            "value": "start-time-hour",
-            "case_sensitive": false
-          },
-          "value": "15"
-        },
-        {
-          "type": "SelectAction",
-          "selector": {
-            "type": "attributeValueSelector",
-            "attribute": "aria-label",
-            "value": "Start time minute",
-            "case_sensitive": false
-          },
-          "value": "30"
-        },
-        {
-          "type": "SelectAction",
-          "selector": {
-            "type": "attributeValueSelector",
-            "attribute": "id",
-            "value": "end-time-hour",
-            "case_sensitive": false
-          },
-          "value": "17"
-        },
-        {
-          "type": "SelectAction",
-          "selector": {
-            "type": "attributeValueSelector",
-            "attribute": "aria-label",
-            "value": "End time minute",
-            "case_sensitive": false
-          },
-          "value": "0"
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//*[contains(@id, 'event-location-field')]",
-            "case_sensitive": false
-          },
-          "text": "Museum"
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(text(),'People') or contains(text(),'Guests') or contains(text(),'Participants') or contains(text(),'Attendees')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//*[contains(@id, 'attendee-input')]",
-            "case_sensitive": false
-          },
-          "text": "contractor@build.com"
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(text(), 'Add')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(text(), 'Options') or contains(text(), 'Settings') or contains(text(), 'Preferences') or contains(text(), 'Extras')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "TypeAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//*[contains(@id, 'event-name-input')]",
-            "case_sensitive": false
-          },
-          "text": "bbpnn"
-        },
-        {
-          "type": "SelectDropDownOptionAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//*[contains(@id, 'repeat-select')]",
-            "case_sensitive": false
-          },
-          "text": "Default",
-          "timeout_ms": 1000
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(text(), 'Cancel')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
-    "elapsed": 3.81
+    "response": null,
+    "status": "error",
+    "error": "Server error '500 Internal Server Error' for url 'http://127.0.0.1:6000/solve_task'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500",
+    "elapsed": 2.99
   },
   {
     "task": {
@@ -6687,7 +5380,7 @@
       "taskId": "8c37e7a8-37c1-4647-9596-344a35eaac16",
       "website": "http://localhost:8008/?seed=929",
       "useCase": "ADD_EXPERIENCE",
-      "prompt": "Add a new experience with company equal to 'Apple', duration equal to 'Sep 2017 - Present â€¢ 8 yrs 3 mos', title that does NOT CONTAIN 'thk', and location that does NOT CONTAIN 'lds'."
+      "prompt": "Add a new experience with company equal to 'Apple', duration equal to 'Sep 2017 - Present • 8 yrs 3 mos', title that does NOT CONTAIN 'thk', and location that does NOT CONTAIN 'lds'."
     },
     "response": null,
     "status": "error",
@@ -6713,102 +5406,10 @@
       "useCase": "NEXT_PICKUP",
       "prompt": "Next pickup: Show details for a pickup where the date is less than or equal to '2026-04-05' and the time is less than or equal to '19:20:00'."
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8012?seed=943",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//*[contains(@id, 'pickup-now-button')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "attributeValueSelector",
-            "attribute": "aria-label",
-            "value": "Select date",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[text()='5' and not(@disabled)]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        },
-        {
-          "type": "SendKeysIWAAction",
-          "selector": null,
-          "keys": "Escape"
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//div[contains(@id, 'time-picker-wrapper')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//div[contains(@id, 'time-slots')]/button[normalize-space(text())='07:20 PM']",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//button[contains(@id, 'pickupnow-submit-button')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
-    "elapsed": 1.72
+    "response": null,
+    "status": "error",
+    "error": "",
+    "elapsed": 0.01
   },
   {
     "task": {
@@ -6829,35 +5430,9 @@
       "useCase": "VIEW_CART",
       "prompt": "Show me the contents of my shopping cart"
     },
-    "response": {
-      "actions": [
-        {
-          "type": "NavigateAction",
-          "selector": null,
-          "url": "http://localhost:8002/?seed=605",
-          "go_back": false,
-          "go_forward": false
-        },
-        {
-          "type": "ClickAction",
-          "selector": {
-            "type": "xpathSelector",
-            "attribute": null,
-            "value": "//a[contains(@href, '/cart')]",
-            "case_sensitive": false
-          },
-          "x": null,
-          "y": null
-        },
-        {
-          "type": "WaitAction",
-          "selector": null,
-          "time_seconds": 2.0,
-          "timeout_seconds": 5.0
-        }
-      ]
-    },
-    "status": "success",
+    "response": null,
+    "status": "error",
+    "error": "",
     "elapsed": 0.0
   },
   {

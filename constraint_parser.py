@@ -137,39 +137,21 @@ def format_constraints_block(constraints: list[Constraint]) -> str:
 def extract_credentials(prompt: str) -> dict[str, str]:
     """Pull literal credential values and well-known placeholders from task text."""
     creds: dict[str, str] = {}
-
-    # Detect web_agent_id early so we can substitute it in parsed values
-    agent_id = "1"  # default IWA sandbox agent id
-    if "<web_agent_id>" in prompt:
-        creds["web_agent_id"] = agent_id
-
-    # Also try to extract from "equals" patterns in prompt
-    # e.g. "username equals 'newuser<web_agent_id>'"
+    # Explicit credentials in prompt
     for field in ("username", "password", "email"):
-        # Match "field equals 'value'" patterns (from constraint-style prompts)
         m = re.search(
-            rf"(?:the\s+)?{field}\s+(?:equals?|is)\s+['\"]([^'\"]+)['\"]", prompt, re.IGNORECASE
+            rf"{field}\s*[:=]\s*['\"]?([^'\"\n,]+)['\"]?", prompt, re.IGNORECASE
         )
         if m:
             creds[field] = m.group(1).strip()
-        else:
-            # Fallback: "field: value" or "field = value"
-            m = re.search(
-                rf"{field}\s*[:=]\s*['\"]?([^'\"\n,]+)['\"]?", prompt, re.IGNORECASE
-            )
-            if m:
-                creds[field] = m.group(1).strip()
-
-    # Substitute <web_agent_id> in all credential values
-    for key in list(creds.keys()):
-        if isinstance(creds[key], str) and "<web_agent_id>" in creds[key]:
-            creds[key] = creds[key].replace("<web_agent_id>", agent_id)
 
     # IWA placeholders
     if "<username>" in prompt:
         creds.setdefault("username", "<username>")
     if "<password>" in prompt:
         creds.setdefault("password", "<password>")
+    if "<web_agent_id>" in prompt:
+        creds["web_agent_id"] = "1"
 
     # Defaults for IWA sandbox
     creds.setdefault("username", "<username>")

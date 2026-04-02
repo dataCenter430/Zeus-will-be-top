@@ -67,7 +67,7 @@ def _infer_credentials(text: str, candidate: Candidate) -> str:
     if candidate.name in {"username", "user", "login"}:
         return "<username>"
     if candidate.input_type == "email" or candidate.name == "email":
-        return "<signup_email>"
+        return "<username>"
     return text
 
 

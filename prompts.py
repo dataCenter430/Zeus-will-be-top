@@ -10,27 +10,13 @@ def build_system_prompt() -> str:
         "click/type/select_option: candidate_id=integer from the Interactive elements list. "
         "navigate: url=full URL (keep ?seed=X param). "
         "done: only when task is fully completed.\n"
-        "CONSTRAINT RULES (CRITICAL):\n"
-        "- equals: type/select the EXACT value shown. Match precisely including spaces.\n"
-        "- not_equals: SKIP items with that value. Pick ANY OTHER item instead.\n"
-        "- contains: find item where the field has that substring.\n"
-        "- not_contains: SKIP items where the field has that substring.\n"
-        "- greater/less/>=/<= : compare numerically (or by date/time for date fields).\n"
-        "- When multiple constraints exist, ALL must be satisfied simultaneously.\n"
-        "- For NOT constraints: scan ALL visible items, skip any that match the excluded value, pick the first remaining item that also satisfies all positive constraints.\n"
-        "- For forms with NOT constraints on a field: pick any valid option from the dropdown that is NOT the excluded value.\n"
+        "RULES: Copy values EXACTLY from CREDENTIALS/CONSTRAINTS (include trailing spaces). "
+        "equals->type exact value. not_equals->use any OTHER value. contains->find item with that substring. "
+        "not_contains/not_in->find item WITHOUT that value. greater/less->numeric comparison.\n"
         "CREDENTIALS: username/email may have trailing spaces - type them exactly as shown in quotes.\n"
         "MULTI-STEP: complete login first, then the secondary action. Track progress in memory.\n"
-        "STRATEGY: For tasks with constraints, call match_cards or filter_table FIRST to find the exact item, then interact with it using the returned candidate_id.\n"
-        "TOOLS: Return {\"tool\":\"<name>\",\"args\":{...}} to inspect the page before acting. "
-        "Tools: "
-        "match_cards({constraints:[{field,operator,value}]}): find cards/items matching ALL constraints - USE THIS FIRST when you have TASK_CONSTRAINTS to locate an item; "
-        "filter_table({constraints:[{field,operator,value}]}): filter HTML table rows matching ALL constraints - USE when data is in a table; "
-        "list_cards({max_cards?,max_text?}): list all cards without filtering; "
-        "search_text({query}): search HTML for text; "
-        "list_links({}): list all links; "
-        "extract_forms({}): extract form fields. "
-        "Operator values: equals|not_equals|contains|not_contains|greater_than|less_than|greater_equal|less_equal.\n"
+        "TOOLS: Return {\"tool\":\"<name>\",\"args\":{...}} to inspect page. Max 1 tool per step. "
+        "Tools: list_cards({max_cards?,max_text?}); search_text({query}); list_links({}); extract_forms({}).\n"
         "JSON ONLY. No explanation."
     )
 
@@ -57,7 +43,6 @@ def build_user_prompt(
     state_delta: str = "",
     cards_preview: str = "",
     extra_hint: str = "",
-    matched_items: str = "",
 ) -> str:
     parts: list[str] = []
 
@@ -74,7 +59,7 @@ def build_user_prompt(
 
     # --- Website hints ---
     if website_hint:
-        hint_capped = website_hint[:280] + "..." if len(website_hint) > 280 else website_hint
+        hint_capped = website_hint[:150] + "..." if len(website_hint) > 150 else website_hint
         parts.append(f"\nSITE_HINTS: {hint_capped}")
 
     # --- Credentials ---
@@ -85,13 +70,9 @@ def build_user_prompt(
     if constraints_block:
         parts.append(f"\n{constraints_block}")
 
-    # --- Auto-matched items (pre-computed, model-independent) ---
-    if matched_items:
-        parts.append(f"\n{matched_items[:600]}")
-
     # --- Playbook ---
     if playbook:
-        playbook_capped = playbook[:500] + "..." if len(playbook) > 500 else playbook
+        playbook_capped = playbook[:350] + "..." if len(playbook) > 350 else playbook
         parts.append(f"\n{playbook_capped}")
 
     # --- Page summary (DOM digest, early steps only) ---

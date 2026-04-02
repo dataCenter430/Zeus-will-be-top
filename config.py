@@ -195,26 +195,12 @@ WEBSITE_HINTS: dict[str, str] = {
         "Contact doctor form: opens when Contact button clicked on doctor card."
     ),
     "autostats": (
-        "SITE: Bittensor analytics. Subnet cards: favorite with star/heart icon. "
-        "WALLET: 'Connect Wallet' button in header → modal → select wallet type (Polkadot.js/MetaMask). "
-        "BLOCKS: Blocks section in nav → table of blocks with hash, number, timestamp, transactions. "
-        "NAV: Subnets, Validators, Miners, Dashboard, Blocks. "
-        "Subnet fields: subnet_name, subnet_id, description, emission, registration_cost. "
-        "Validator/Miner: name, stake, rank, trust, emission. Export: download button."
+        "Analytics dashboard. Charts, data tables, filter controls, export options. "
+        "Date range selectors, metric dropdowns."
     ),
     "autodiscord": (
-        "SITE: Discord-style chat application. LEFT SIDEBAR: server list (icons), channel list per server. "
-        "Channel types: text channels (#), voice channels (speaker icon). "
-        "Voice channel: Join button, Mute/Unmute toggle button, Deafen/Undeafen toggle button. "
-        "Mute button: microphone icon in voice controls bar at bottom of channel sidebar or in voice panel. "
-        "When muted, mute icon shows slash-through; click to unmute (set muted=False). "
-        "When unmuted, click to mute (set muted=True). "
-        "MAIN PANEL: message list with author, timestamp, content. "
-        "Message actions: Edit, Delete, Pin, React (emoji picker). "
-        "Message input: text field at bottom of main panel. "
-        "Server management: server name dropdown -> Server Settings. "
-        "User search: search bar in member list or top bar. "
-        "Channel actions: Create Channel (+), Delete Channel, Edit Channel in server settings."
+        "Chat application. Server list, channels, messages, user search, "
+        "server management. Channel messages in main panel."
     ),
 }
 
@@ -222,7 +208,7 @@ WEBSITE_HINTS: dict[str, str] = {
 # Task playbooks (130+ step-by-step guides per task type)
 # ---------------------------------------------------------------------------
 TASK_PLAYBOOKS: dict[str, str] = {
-    "REGISTRATION": "PLAYBOOK: 1) Find and click Register/Sign Up link in navbar or on homepage. 2) On the registration form page: type <signup_username> into username field, type <signup_email> into email field. 3) Type <signup_password> into password field (and confirm password field if present). 4) Click Submit/Register button. Use placeholder tokens exactly as shown.",
+    "REGISTRATION": "PLAYBOOK: 1) Navigate to register/signup page. 2) Type signup_username into username field. 3) Type signup_email into email field. 4) Type signup_password into password field. 5) Click submit/register button. Use EXACT credential values.",
     "LOGIN": "PLAYBOOK: 1) Navigate to login page. 2) Type username into username/email field EXACTLY as given. 3) Type password into password field EXACTLY as given. 4) Click login/sign-in submit button.",
     "LOGIN_THEN_LOGOUT": "PLAYBOOK: 1) Navigate to login page. 2) Type username exactly. 3) Type password exactly. 4) Click login submit. 5) After login, find logout/sign-out button (often in nav/profile menu). 6) Click logout.",
     "LOGIN_THEN_LIST_ACTION": "PLAYBOOK: 1) Login (navigate to login, fill credentials, submit). 2) Search or browse to find the specific item matching the criteria. 3) Navigate to that item's detail page. 4) Click the add-to-watchlist/reading-list/cart button, or remove button.",
@@ -251,10 +237,10 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "LIST_ACTION": "PLAYBOOK: 1) Navigate to the item detail page. 2) Find the watchlist/reading-list button. 3) Click add or remove.",
     "SEARCH_LOCATION": "PLAYBOOK: 1) Find the search/destination input field. 2) Click it to focus. 3) Type the destination EXACTLY as given. 4) Click the matching result. 5) Submit/confirm if needed.",
     "RESERVE_RIDE": "PLAYBOOK: 1) Browse available rides. 2) Use list_cards to see all rides. 3) Find the ride matching ALL TASK_CONSTRAINTS. 4) Click Reserve on the matching ride.",
-    "CANCEL_RESERVATION": "PLAYBOOK: 1) Navigate to reservations/upcoming trips page. 2) Find the reservation matching ALL constraints: location CONTAINS value, destination NOT CONTAIN excluded value (skip if destination matches), ride_name equals, scheduled time equals. 3) Click Cancel or the reservation row. 4) Confirm cancellation if prompted.",
+    "CANCEL_RESERVATION": "PLAYBOOK: 1) Navigate to reservations/upcoming rides page. 2) Find the reservation matching ALL TASK_CONSTRAINTS. 3) Click Cancel. 4) Confirm if prompted.",
     "SELECT_DATE": "PLAYBOOK: 1) Find the date picker/calendar widget. 2) Click it to open. 3) Select a date satisfying TASK_CONSTRAINTS. 4) Confirm the selection.",
     "SELECT_TIME": "PLAYBOOK: 1) Find the time picker/dropdown. 2) Click to open. 3) Select a time satisfying the constraint. 4) Confirm.",
-    "NEXT_PICKUP": "PLAYBOOK: 1) Look for Next Pickup or scheduled rides section. 2) Use list_cards to see all pickups. 3) Compare each card's date/time against CONSTRAINTS (<=, >= etc). 4) Click Show Details on the matching pickup.",
+    "NEXT_PICKUP": "PLAYBOOK: 1) Look for a Next Pickup or scheduled ride section. 2) Find the pickup satisfying date/time constraints. 3) Click to view details.",
     "STAR_AN_EMAIL": "PLAYBOOK: 1) Browse the inbox email list. 2) Find the email matching ALL constraints. 3) Click the Star icon on that email row.",
     "ARCHIVE_EMAIL": "PLAYBOOK: 1) Browse the inbox. 2) Find email matching constraints. 3) Click on that email. 4) Find Archive button. Click it.",
     "DELETE_EMAIL": "PLAYBOOK: 1) Find the email matching constraints. 2) Click the Delete/Trash icon on that email row.",
@@ -294,7 +280,7 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "OPEN_APPOINTMENT_FORM": "PLAYBOOK: 1) Browse doctor cards. 2) Find doctor matching ALL constraints. 3) Click Book Appointment. 4) Fill in date and time. 5) Open/submit.",
     "OPEN_CONTACT_DOCTOR_FORM": "PLAYBOOK: 1) Find doctor matching ALL constraints. 2) Click Contact Doctor button.",
     "CONTACT_DOCTOR": "PLAYBOOK: 1) Find doctor matching constraints. 2) Click Contact. 3) Fill the contact form. 4) Submit.",
-    "SEARCH_APPOINTMENT": "PLAYBOOK: 1) Navigate to Appointments section (click Appointments in navbar). 2) Look for search/filter input fields: doctor_name, specialty, date, patient_name, status. 3) Enter EXACT values from TASK_CONSTRAINTS into matching filter fields. 4) Click Search or Apply Filter button. 5) The matching appointments appear in the table below.",
+    "SEARCH_APPOINTMENT": "PLAYBOOK: 1) Go to Appointments section. 2) Search/filter for matching appointments. 3) View results.",
     "REQUEST_QUICK_APPOINTMENT": "PLAYBOOK: 1) Find Quick Appointment button. 2) Fill form satisfying constraints. 3) Submit.",
     "VIEW_DOCTOR_EDUCATION": "PLAYBOOK: 1) Browse doctors list. 2) Find doctor matching ALL constraints. 3) Click on doctor's card. 4) Find Education tab/section. 5) Click it.",
     "COMMENT_ON_POST": "PLAYBOOK: 1) Find a post in the feed. 2) Click the Comment button. 3) Type the EXACT comment text. 4) Submit.",
@@ -306,7 +292,7 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "EDIT_PROFILE_BIO": "PLAYBOOK: 1) Navigate to Profile/Settings. 2) Find Bio field. 3) Set bio to EXACT value. 4) Save.",
     "HIRE_BTN_CLICKED": "PLAYBOOK: 1) Browse expert/consultant list. 2) Find expert matching ALL constraints. 3) Click Hire Now.",
     "HIRE_LATER": "PLAYBOOK: 1) Browse expert list. 2) Find expert matching constraints. 3) Click Hire Later.",
-    "HIRE_LATER_REMOVED": "PLAYBOOK: 1) Navigate to Hire Later page (find 'Hire Later' link in navbar or hires section). 2) Find the expert whose role equals and name equals the constraints. 3) Click Remove or Delete button next to that expert.",
+    "HIRE_LATER_REMOVED": "PLAYBOOK: 1) Navigate to Hire Later page. 2) Find expert matching constraints. 3) Click Remove.",
     "SELECT_HIRING_TEAM": "PLAYBOOK: 1) Find the Hiring Team section. 2) Find member matching constraints. 3) Click to view.",
     "CHOOSE_PROJECT_SIZE": "PLAYBOOK: 1) Find the project size selector. 2) Choose a size NOT the excluded one.",
     "CLOSE_POST_A_JOB_WINDOW": "PLAYBOOK: 1) Open the job posting form. 2) Fill in rate_from/rate_to. 3) Close the window (X/Cancel).",
@@ -319,7 +305,7 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "RESERVE_HOTEL": "PLAYBOOK: 1) Browse hotel listings. 2) Find hotel matching ALL constraints. 3) Set guests if needed. 4) Click Reserve/Book Now.",
     "SEARCH_HOTEL": "PLAYBOOK: 1) Find the hotel search bar. 2) Type the search term. 3) Submit.",
     "PAYMENT_METHOD_SELECTED": "PLAYBOOK: 1) Find hotel matching constraints. 2) Click to book. 3) Select a payment method satisfying constraints.",
-    "EDIT_NUMBER_OF_GUESTS": "PLAYBOOK: 1) Find the booking/listing matching ALL constraints (may have many: rating, location, host_name, title, price, reviews). 2) Click on it to open the detail or booking page. 3) Find the guest count selector (+/- buttons or dropdown). 4) Set the guest count to the value specified in the task (e.g. 'Set total guests to 2'). 5) Save or update the booking.",
+    "EDIT_NUMBER_OF_GUESTS": "PLAYBOOK: 1) Find hotel/listing matching constraints. 2) Find the guest count selector. 3) Set it to the required number.",
     "SUBMIT_REVIEW": "PLAYBOOK: 1) Find listing matching constraints. 2) Click Write Review. 3) Set rating. 4) Type review text. 5) Submit.",
     "ADD_TO_WISHLIST_HOTEL": "PLAYBOOK: 1) Find hotel matching constraints. 2) Click Add to Wishlist/heart icon.",
     "APPLY_FILTERS": "PLAYBOOK: 1) Find filter controls. 2) Set region/rating/price as specified. 3) Apply the filter.",
@@ -378,7 +364,7 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "AUTOLIST_SELECT_TASK_PRIORITY": "PLAYBOOK: 1) Find task with priority NOT the excluded value. 2) Click priority selector. 3) Select High or target value. 4) Save.",
     "AUTOLIST_CANCEL_TASK_CREATION": "PLAYBOOK: 1) Click Add Task. 2) Fill fields as specified. 3) Click Cancel/Discard instead of Submit.",
     "AUTOLIST_TEAM_CREATED": "PLAYBOOK: 1) Navigate to Teams section. 2) Click Create Team. 3) Fill fields satisfying constraints. 4) Save.",
-    "AUTOLIST_COMPLETE_TASK": "PLAYBOOK: 1) Find task list. 2) For NOT constraints (name NOT X, description NOT CONTAIN Y): skip any task where that field matches the excluded value. 3) For positive constraints (priority equals, date >=): require those to match. 4) Click the checkbox or Complete button on the task satisfying ALL constraints.",
+    "AUTOLIST_COMPLETE_TASK": "PLAYBOOK: 1) Find task matching ALL constraints. 2) Click Complete/checkmark button. 3) Confirm.",
     "AUTOLIST_SELECT_DATE_FOR_TASK": "PLAYBOOK: 1) Find task. 2) Click Edit or date field. 3) Select date satisfying constraint. 4) Confirm.",
     "DELETE_BOOK": "PLAYBOOK: 1) Login with credentials. 2) Navigate to your books. 3) Find matching book. 4) Click Delete. 5) Confirm.",
     "EDIT_BOOK": "PLAYBOOK: 1) Login. 2) Find book matching constraints. 3) Click Edit. 4) Modify fields. 5) Save.",
@@ -414,10 +400,10 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "MESSAGE_HOST": "PLAYBOOK: 1) Find hotel matching ALL constraints. 2) Click to open. 3) Find Message Host button. 4) Type message. 5) Send.",
     "EDIT_CHECK_IN_OUT_DATES": "PLAYBOOK: 1) Find listing matching constraints. 2) Open booking form. 3) Modify dates. 4) Save.",
     "WISHLIST_OPENED": "PLAYBOOK: 1) Find Wishlist/Saved Hotels icon. 2) Click to open.",
-    "REMOVE_FROM_WISHLIST": "PLAYBOOK: 1) Navigate to Wishlist (click Wishlist/Saved link). 2) Scan each hotel card. 3) For NOT constraints (title NOT contain, host NOT equal): skip any card where that field matches the excluded value. 4) For positive constraints (price equals, guests >=): require those to match. 5) Click Remove or the heart/bookmark icon on the matching hotel.",
+    "REMOVE_FROM_WISHLIST": "PLAYBOOK: 1) Open wishlist. 2) Find listing matching constraints. 3) Click Remove.",
     "JOBS_NAVBAR": "PLAYBOOK: 1) Find Jobs tab in navbar. 2) Click it.",
     "EDIT_PROFILE": "PLAYBOOK: 1) Find user matching constraints. 2) Navigate to Profile. 3) Click Edit Profile. 4) Update fields. 5) Save.",
-    "POST_STATUS": "PLAYBOOK: 1) On the feed/home page, find the status input textarea (placeholder: 'What's on your mind?' or 'Write a post'). 2) Click on the textarea to focus it. 3) Type post content: if content 'NOT equals X' constraint, type any text that is NOT X. 4) After typing, look for 'Post' or 'Share' button. 5) Click Post to publish. If textarea not visible, scroll up to find it.",
+    "POST_STATUS": "PLAYBOOK: 1) Find status input on feed. 2) Click in text box. 3) Type content satisfying constraints. 4) Click Post.",
     "REMOVE_POST": "PLAYBOOK: 1) Find post satisfying constraints. 2) Click 3-dot menu. 3) Click Remove/Delete. 4) Confirm.",
     "EDIT_PROFILE_TITLE": "PLAYBOOK: 1) Navigate to profile settings. 2) Find title field. 3) Click Edit, clear, type new value. 4) Save.",
     "POST_A_JOB": "PLAYBOOK: 1) Find Post a Job button. 2) Click it.",
@@ -437,7 +423,7 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "REVIEW_SUBMITTED": "PLAYBOOK: 1) Find restaurant matching constraints. 2) Open it. 3) Find Write Review button. 4) Fill rating and review text. 5) Submit.",
     "BACK_TO_ALL_RESTAURANTS": "PLAYBOOK: 1) Navigate to restaurant matching constraints. 2) Open detail page. 3) Find Back button. 4) Click it.",
     "ADDRESS_ADDED": "PLAYBOOK: 1) Find delivery address section. 2) Click Add Address. 3) Type exact address. 4) Fill additional fields. 5) Save.",
-    "SHARE_HOTEL": "PLAYBOOK: 1) Scroll through hotel cards. 2) For NOT constraints (host_name, title, location): skip any card where that field matches the excluded value. 3) For positive constraints (price, rating, guests, amenities): find matching card. 4) Click that hotel to open details. 5) Find Share button/link. 6) Type the email from constraints exactly. 7) Send/Submit.",
+    "SHARE_HOTEL": "PLAYBOOK: 1) Find hotel matching ALL constraints. 2) Click to open. 3) Find Share button. 4) Enter recipient email. 5) Send.",
     "POPULAR_HOTELS_VIEWED": "PLAYBOOK: 1) Find Popular Hotels section. 2) Apply rating filter if available. 3) Click to view.",
     "TRIP_DETAILS": "PLAYBOOK: 1) View trips list. 2) Find trip matching ALL constraints. 3) Click to view details.",
     "SELECT_CAR": "PLAYBOOK: 1) Find ride matching constraints. 2) Click to open. 3) Select car option.",
@@ -454,50 +440,6 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "EDIT_TASK": "PLAYBOOK: 1) Find task matching constraints. 2) Click Edit. 3) Update fields. 4) Save.",
     "COMPLETE_TASK": "PLAYBOOK: 1) Find task matching constraints. 2) Click Complete/Done/Checkmark.",
     "JOB_POSTING": "PLAYBOOK: 1) Find Post a Job button. 2) Click it. 3) Type EXACT job title. 4) Submit.",
-    # ---- AutoDiscord playbooks ----
-    "TOGGLE_MUTE": "PLAYBOOK: 1) Look for voice channel controls at bottom of sidebar or voice panel. 2) Find the Mute/Unmute button (microphone icon). 3) Click it to toggle mute state. If task says muted='False', ensure you UNMUTE (click mute button when currently muted).",
-    "TOGGLE_DEAFEN": "PLAYBOOK: 1) Find voice controls. 2) Find Deafen button (headphone icon). 3) Click to toggle.",
-    "JOIN_VOICE_CHANNEL": "PLAYBOOK: 1) Find voice channel in channel list (speaker icon). 2) Click on the voice channel name to join.",
-    "LEAVE_VOICE_CHANNEL": "PLAYBOOK: 1) Find Disconnect button in voice controls. 2) Click it.",
-    "SEND_CHANNEL_MESSAGE": "PLAYBOOK: 1) Navigate to the correct channel. 2) Find message input at bottom. 3) Type message. 4) Submit (Enter or Send).",
-    "CREATE_CHANNEL": "PLAYBOOK: 1) Find + button next to channel category. 2) Click it. 3) Fill channel name. 4) Select type (text/voice). 5) Create.",
-    "DELETE_CHANNEL": "PLAYBOOK: 1) Find channel matching constraints. 2) Right-click or open settings. 3) Delete Channel. 4) Confirm.",
-    "CREATE_SERVER": "PLAYBOOK: 1) Find + button in server list. 2) Click Create Server. 3) Fill server name. 4) Create.",
-    "SWITCH_SERVER": "PLAYBOOK: 1) Find server icon in left sidebar. 2) Click on it.",
-    "SWITCH_CHANNEL": "PLAYBOOK: 1) Find channel matching constraints in channel list. 2) Click on it.",
-    "PIN_MESSAGE": "PLAYBOOK: 1) Find message matching constraints. 2) Hover or right-click. 3) Click Pin/Unpin.",
-    "EDIT_MESSAGE": "PLAYBOOK: 1) Find message matching constraints. 2) Click Edit. 3) Modify text. 4) Save.",
-    "DELETE_MESSAGE": "PLAYBOOK: 1) Find message matching constraints. 2) Click Delete. 3) Confirm.",
-    "REACT_MESSAGE": "PLAYBOOK: 1) Find message matching constraints. 2) Click Add Reaction. 3) Select emoji. 4) Confirm.",
-    "SEARCH_USER": "PLAYBOOK: 1) Find user search in member list or top bar. 2) Type search query. 3) Submit.",
-    "INVITE_USER": "PLAYBOOK: 1) Find Invite button or member settings. 2) Enter username/email. 3) Send invite.",
-    "CHANGE_NICKNAME": "PLAYBOOK: 1) Find profile or server settings. 2) Find nickname field. 3) Change to value satisfying constraints. 4) Save.",
-    "SERVER_SETTINGS": "PLAYBOOK: 1) Click server name dropdown. 2) Click Server Settings.",
-    # ---- AutoStats playbooks ----
-    "FAVORITE_SUBNET": "PLAYBOOK: 1) Use list_cards tool to inspect all subnet cards. 2) For each subnet: check ALL constraints simultaneously - skip if any NOT constraint matches, require all positive (equals/contains/>/< ) constraints to match. 3) Exactly one subnet will match all constraints. 4) Click the Star or Heart (favorite) icon on that specific subnet card. Do NOT click View Details - click the star/heart icon.",
-    "UNFAVORITE_SUBNET": "PLAYBOOK: 1) Browse subnet list. 2) Find subnet matching constraints. 3) Click to unfavorite (toggle star/heart off).",
-    "VIEW_SUBNET_DETAILS": "PLAYBOOK: 1) Browse subnet list. 2) Find subnet matching constraints. 3) Click to view details.",
-    "FILTER_SUBNET": "PLAYBOOK: 1) Find search/filter controls. 2) Apply filters satisfying constraints. 3) View results.",
-    "VIEW_VALIDATOR_DETAILS": "PLAYBOOK: 1) Navigate to Validators section. 2) Find validator matching constraints. 3) Click to view.",
-    "VIEW_MINER_DETAILS": "PLAYBOOK: 1) Navigate to Miners section. 2) Find miner matching constraints. 3) Click to view.",
-    "SELECT_DATE_RANGE": "PLAYBOOK: 1) Find date range selector. 2) Set range satisfying constraints. 3) Apply.",
-    "EXPORT_DATA": "PLAYBOOK: 1) Find Export/Download button. 2) Click it. 3) Select format if prompted.",
-    "VIEW_DASHBOARD": "PLAYBOOK: 1) Find Dashboard link in navigation. 2) Click it.",
-    "DISCONNECT_WALLET": "PLAYBOOK: 1) Navigate to Settings or Wallet/Account section. 2) Find the wallet matching the wallet_name constraint. 3) Click Disconnect button. 4) Confirm if prompted.",
-    "CONNECT_WALLET": "PLAYBOOK: 1) Look for 'Connect Wallet' button in the header/navbar. 2) Click it to open the wallet connection modal. 3) A modal/dialog appears with wallet options. 4) Click on a wallet option satisfying the wallet_name constraint (e.g. Polkadot.js, MetaMask, SubWallet). 5) Confirm the connection.",
-    "VIEW_BLOCK": "PLAYBOOK: 1) Find 'Blocks' link in the navigation. 2) Click it to navigate to the Blocks section. 3) A table of blocks appears. 4) Find the block matching ALL CONSTRAINTS (block_number equals, hash equals, timestamp, transactions count). 5) Click on the matching block row to view details.",
-    # ---- New task types from failure analysis ----
-    "VIEW_HOTEL_DETAIL": "PLAYBOOK: 1) If currently on a hotel detail page, click Back or 'All Hotels' link first to return to the list. 2) Scroll through hotel cards. 3) For NOT constraints: skip any card where that field matches the excluded value. 4) Match ALL positive constraints (title, price, amenities, host_name, etc.) - the title/price/amenities may require clicking into each hotel to verify. 5) Click View Details or the hotel card title.",
-    "REORDER": "PLAYBOOK: 1) Navigate to Orders or Order History section. 2) Find the past order containing the item matching constraints (item name, restaurant). 3) Click Reorder button on that order.",
-    "OPEN_SETTINGS": "PLAYBOOK: 1) Look for Settings link in: profile/avatar dropdown menu, gear icon in navbar, or account menu. 2) Click it to open Settings page.",
-    "ADD_REMINDER": "PLAYBOOK: 1) Browse events on the calendar. 2) Find the event where the current reminder value satisfies the constraint (e.g. minutes > 14 means find an event whose reminder is currently > 14). 3) Click the event to open it. 4) Find the Reminders field. 5) Add a reminder value satisfying the constraint. 6) Save the event.",
-    "OPEN_DM": "PLAYBOOK: 1) Find Direct Messages link or icon in the left sidebar or navigation bar. 2) Click it.",
-    "CLEAR_CART": "PLAYBOOK: 1) Navigate to Cart or Shopping Cart. 2) Find items matching constraints (item name, price). 3) Remove items one by one up to the maximum quantity limit specified. 4) Confirm each removal.",
-    "PLACE_ORDER": "PLAYBOOK: 1) Navigate to restaurant matching constraints. 2) Find menu item matching ALL constraints (name, price; NOT equals quantity: pick any other). 3) Add to cart. 4) Checkout. 5) Fill phone, address exactly. 6) Set mode (pickup/delivery). 7) Add preferences (contains: type text with substring). 8) Place order.",
-    "BOOK_APPOINTMENT": "PLAYBOOK: 1) Browse Doctors list. 2) Skip any doctor where name/speciality matches a NOT constraint. 3) Click Book Appointment on the matching doctor. 4) Fill form fields: date/time/phone/insurance exactly as given; for NOT constraints on patient_name/email/reason pick any value that is NOT the excluded one. 5) Submit the form.",
-    "ADD_EXPERIENCE": "PLAYBOOK: 1) Navigate to Profile or Edit Profile page. 2) Find Experience section. 3) Click Add Experience or + button. 4) Fill form: company=exact value, title=any value NOT matching excluded title, location=exact value, description=any text containing the specified substring. 5) Save/Submit.",
-    "BACK_TO_ALL_JOBS": "PLAYBOOK: 1) Find and click Back, All Jobs, or Jobs breadcrumb link to return to job list. 2) Scroll through jobs. 3) For NOT constraints: skip any job where that field matches the excluded value. 4) Find job matching ALL constraints (title, company, location). 5) Click to view details.",
-    "ABOUT_FEATURE_CLICK": "PLAYBOOK: 1) Navigate to About page (look for About link in navbar). 2) Find feature cards/sections. 3) Click on the feature whose text CONTAINS the specified value.",
     "GENERAL": "PLAYBOOK: Analyze the task carefully, identify the key action required, and execute the most direct path. Use TASK_CONSTRAINTS to find the correct item and fill forms.",
 }
 
