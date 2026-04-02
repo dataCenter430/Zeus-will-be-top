@@ -41,9 +41,9 @@ SELECTOR_PRIORITY: list[str] = [
 # ---------------------------------------------------------------------------
 # LLM defaults
 # ---------------------------------------------------------------------------
-LLM_MODEL = "gpt-4o-mini"
+LLM_MODEL = "gpt-4o"
 LLM_TEMPERATURE = 0.2
-LLM_MAX_TOKENS = 350
+LLM_MAX_TOKENS = 400
 PAGE_IR_MAX_TOKENS = 1400
 PAGE_IR_CHAR_LIMIT = PAGE_IR_MAX_TOKENS * 4
 
@@ -65,11 +65,13 @@ WEBSITE_HINTS: dict[str, str] = {
         "Registration: username='newuser ', email='newuser @gmail.com', password='Passw0rd!'."
     ),
     "autobooks": (
-        "SITE: Book store. NAV: Books, Cart icon, Login/Register. "
-        "Books have title, author, genres, year, page_count, rating, price. "
-        "Login/Register with placeholder credentials (' '/' '). "
-        "Book detail: Add to Cart, Add to Wishlist, Open Preview buttons. "
-        "Admin: Add Book, Edit Book, Delete Book. Cart icon top-right."
+        "SITE: Book store. NAV: Books list, Cart icon (top-right), Login/Register. "
+        "Book cards show title, author, genres, year, price, rating. "
+        "Click book → detail page. Book detail page has: 'Open Preview' button, 'Add to Cart' button, 'Add to Wishlist' button, 'Share' button. "
+        "LOGIN: username='<username>', password='<password>' (from task credentials). "
+        "ADMIN ops (DELETE_BOOK, EDIT_BOOK, ADD_BOOK): FIRST login, then navigate to Admin panel or 'My Books'. "
+        "Delete: find book matching constraints → click Delete → confirm. "
+        "Registration: /register page with username, email, password fields."
     ),
     "autozone": (
         "SITE: E-commerce store. NAV: Products grid, Category sidebar/filter, Cart icon, Wishlist. "
@@ -89,12 +91,13 @@ WEBSITE_HINTS: dict[str, str] = {
         "Contact form: name, email, message, subject fields."
     ),
     "autocrm": (
-        "SITE: Legal case management + calendar. NAV: Dashboard, Matters, Clients, Calendar. "
-        "Matters list: sortable columns. Add New Matter button. "
-        "Clients list: Add New Client button (name, email, status, matters). "
-        "Calendar: Add event button, date/time/label/event_type fields. "
-        "Settings: Change user name option. "
-        "Sort by column: click column header or sort button."
+        "SITE: Legal CRM. NAV: Matters, Clients, Calendar, Billing (left sidebar). "
+        "BILLING/LOGS: time log entries with columns status (Billable/Non-Billable/Pending), client, date, hours — "
+        "click pencil/edit icon on a row to edit that log entry. "
+        "Matters: Add New Matter button, sortable list. "
+        "Clients: Add New Client button. "
+        "Calendar: Add event button, fields: title, date, time, label, event_type. "
+        "Settings: Change user name option."
     ),
     "automail": (
         "SITE: Webmail client. NAV: Inbox, Drafts, Sent, Spam, Templates folder tabs. "
@@ -107,15 +110,14 @@ WEBSITE_HINTS: dict[str, str] = {
         "Pagination: Next/Previous page arrows at bottom of email list."
     ),
     "autodelivery": (
-        "SITE: Food delivery app. NAV: Restaurants list, Cart, Orders. "
-        "Restaurant cards: name, cuisine, rating, description. Click to view restaurant detail. "
-        "Restaurant detail: menu items with size, price, quantity selector. Add to cart. "
-        "Cart page: shows items with preferences (dietary), size, quantity, price, restaurant name. "
-        "Cart: Dropoff preference selector (Hand it to me / Leave at door / Text when arriving). "
-        "Delivery priority: Normal/Priority/Scheduled option. "
-        "Checkout: proceed to checkout button. "
-        "Pagination: next/previous page for restaurant list. "
-        "View all restaurants: click All Restaurants or similar nav link."
+        "SITE: Food delivery. Restaurant list with name, cuisine, rating. "
+        "FILTERS (top of page): cuisine filter (dropdown/buttons) and rating filter (input/slider) — "
+        "set and apply to show filtered restaurant list. "
+        "Click restaurant → menu with items (name, price). Add to cart opens a modal. "
+        "Cart: items with dietary preferences, dropoff preference selector "
+        "(Hand it to me / Leave at door / Text when arriving). "
+        "Orders section: recent orders with Reorder button. "
+        "'All Restaurants' nav link to clear filters."
     ),
     "autolodge": (
         "SITE: Hotel/lodging booking (Airbnb-style). Shows listing cards. "
@@ -130,12 +132,13 @@ WEBSITE_HINTS: dict[str, str] = {
     ),
     "autoconnect": (
         "SITE: Professional network (LinkedIn-style). NAV: Feed, Jobs, People, Company Pages. "
-        "Feed: posts with text, author, Like/Comment buttons. Comment: text field + submit. "
+        "Feed: posts with text, author, Like/Comment/Share buttons. POST_STATUS: click the 'What's on your mind?' textarea, type content, click 'Post' button. "
+        "ADD_EXPERIENCE: go to Profile page → find 'Experience' section → click 'Add Experience' or '+' → fill company/title/duration/location → Save. "
         "Jobs section: job listings with title, company, location, Apply button. "
         "My Applications: list with status (Pending/Accepted/Rejected), Withdraw/Cancel button. "
         "Company Pages: Follow/Unfollow button on each page. "
-        "People/Users: search bar for users. "
-        "Profile: Edit profile (bio, skills, photo). "
+        "People/Users: search bar for users, click result to open profile. "
+        "Profile: Edit profile (bio, skills, photo, experience). "
         "Back to Jobs: breadcrumb or Back button from job detail."
     ),
     "autowork": (
@@ -151,25 +154,24 @@ WEBSITE_HINTS: dict[str, str] = {
         "Hiring Team: section showing team members."
     ),
     "autocalendar": (
-        "SITE: Calendar app (Google Calendar-style). "
-        "View buttons: Day, 5-day (work week), Week, Month -- click to switch view. "
-        "Left sidebar: list of calendars with + button to add new calendar. "
-        "Add New Calendar modal: name + description fields. "
-        "Events: click on time slot or + button to add event. "
-        "Event form: title, date, time, visibility (Public/Private/Default), reminders (minutes), "
-        "meeting_link, attendees (email), all_day toggle, recurrence, calendar, description, busy. "
-        "Event actions: Edit, Delete. "
-        "Attendees: add attendee email field in event edit form."
+        "SITE: Calendar app. TOP BAR: view buttons Day / 5-day / Week / Month. "
+        "LEFT SIDEBAR: calendar list — each calendar shows a COLORED CHECKBOX beside its name. "
+        "Click the checkbox to select (show) or unselect (hide) that calendar. "
+        "+ button below list opens 'Add New Calendar' modal (name + description fields). "
+        "Click time slot or + button → event creation form. "
+        "Event form fields: title, date, start_time, end_time, visibility (Public/Private/Default), "
+        "reminders, meeting_link, attendees (email), calendar dropdown, description, all_day toggle. "
+        "Cancel button on event form abandons creation without saving."
     ),
     "autolist": (
-        "SITE: Task management (Trello/Monday-style). "
-        "Tasks list: each task has name, description, date, priority (1=High/2=Medium/3=Low), status. "
-        "Add Task button: + or 'Add Task' button to create new task. "
-        "Task actions: Edit (pencil icon) -> modal, Delete (trash icon) -> confirm. "
-        "Edit task modal: name, description, date, priority fields. "
-        "Team tab/section: list of team members with name, role. "
-        "Add member: search by name and add. "
-        "Assign role: dropdown next to member name."
+        "SITE: Task management. Tabs: Tasks list, Team. "
+        "TASKS: each row shows name, description, date, priority (1=High/2=Med/3=Low), status. "
+        "Pencil icon → Edit modal (name/description/date/priority). Trash icon → Delete+confirm. "
+        "Complete task: checkmark/done button on the task row. "
+        "+ or 'Add Task' button → creation form. "
+        "TEAM tab: member list with name and role. "
+        "Add Member button → search by name → click result to add. "
+        "Role: dropdown next to each member to assign role."
     ),
     "autodrive": (
         "SITE: Ride-sharing app (Uber-style). "
@@ -184,23 +186,38 @@ WEBSITE_HINTS: dict[str, str] = {
         "Next pickup: shows scheduled pickup details."
     ),
     "autohealth": (
-        "SITE: Medical/healthcare platform. NAV: Doctors, Appointments, Medical Records/Analysis. "
-        "Doctor cards: doctor_name, speciality, rating, consultation_fee, language. "
-        "Doctor card actions: View Profile, Book Appointment, Contact Doctor. "
-        "Doctor profile detail: full info, education section. "
-        "Appointment form: doctor_name, speciality, date, time fields. "
-        "Quick appointment form: speciality, patient_name, patient_email. "
-        "Medical Records/Analysis: searchable list with record_title, doctor_name, record_type, date. "
-        "Search: filter fields for doctor_name, speciality, record_title, etc. "
-        "Contact doctor form: opens when Contact button clicked on doctor card."
+        "SITE: Medical platform. NAV: Doctors, Appointments, Medical Records. "
+        "APPOINTMENTS section: filter/search fields — doctor_name input, speciality input, date picker. "
+        "Fill filter fields and click Search/Submit to show matching appointments. "
+        "Doctor cards: doctor_name, speciality, rating, fee, language, reviews count. "
+        "Doctor detail page has tabs: Overview | Education | Availability. "
+        "VIEW_DOCTOR_EDUCATION: click doctor card → in doctor profile click 'Education' tab. "
+        "VIEW_DOCTOR_AVAILABILITY: click doctor card → click 'Availability' tab. "
+        "APPOINTMENT_BOOKED_SUCCESSFULLY: click 'Book Appointment' on matching doctor card → fill date (satisfying constraints), select time → click Book/Confirm. "
+        "Contact Doctor: opens a contact form (name, email, message fields → submit). "
+        "Medical Records: searchable by record_title, doctor_name, record_type, date."
     ),
     "autostats": (
-        "Analytics dashboard. Charts, data tables, filter controls, export options. "
-        "Date range selectors, metric dropdowns."
+        "SITE: Bittensor network explorer. TOP NAV: Subnets, Validators, Blocks, Wallets tabs. "
+        "SUBNETS page: table rows with netuid, name, emission. "
+        "Each subnet row has a STAR/BOOKMARK icon on the LEFT — click it to FAVORITE that subnet (icon becomes filled/yellow). "
+        "FAVORITE_SUBNET: click the star icon on the row where name does NOT match the excluded value. "
+        "VALIDATORS page: table with validator_name, stake, trust — click row to view detail. "
+        "BLOCKS page: block_height, hash, timestamp — click row to view block detail. "
+        "WALLETS: shows connected wallet cards (wallet_name, address). "
+        "EXECUTE_SELL: find sell/trade form, enter amount, click Execute/Confirm. "
+        "DISCONNECT_WALLET: find wallet card matching wallet_name, click Disconnect button. "
+        "CONNECT_WALLET: click Connect Wallet button, select wallet type from list."
     ),
     "autodiscord": (
-        "Chat application. Server list, channels, messages, user search, "
-        "server management. Channel messages in main panel."
+        "SITE: Discord-like chat. "
+        "FAR-LEFT: server list — vertical stack of round server icons, click one to select it. "
+        "LEFT PANEL: channel list for selected server — text channels (#name) and voice channels (speaker icon). "
+        "Click a voice channel to join it; mute/deafen/leave buttons then appear in bottom-left panel. "
+        "BOTTOM-LEFT: username area with MIC button (mute/unmute), headphone button, and GEAR icon (Settings). "
+        "DMs: person/envelope icon at top of left panel → opens direct message list. "
+        "MAIN PANEL: messages feed + text input box at bottom to send message (Enter or Send button). "
+        "Settings page: click gear icon at bottom-left."
     ),
 }
 
@@ -223,6 +240,9 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "NAVIGATE_DETAIL": "PLAYBOOK: 1) Browse or search for items. 2) Use list_cards or list_links tool to find item matching ALL criteria. 3) Click/navigate to that item's detail page. If you need to filter by criteria, use search or filter controls first.",
     "SHARE_ITEM": "PLAYBOOK: 1) Navigate to the specific item detail page. 2) Find the Share button/icon. 3) Click it.",
     "WATCH_TRAILER": "PLAYBOOK: 1) Navigate to the specific film/movie detail page. 2) Find the Watch Trailer or play button. 3) Click it.",
+    "ADD_FILM": "PLAYBOOK: 1) Login first (username from credentials, password 'Passw0rd!'). 2) Navigate to Admin panel. 3) Click Add Film. 4) Fill title, year, genre, director, duration satisfying constraints. 5) Submit.",
+    "DELETE_FILM": "PLAYBOOK: 1) Login (username from credentials, password 'Passw0rd!'). 2) Navigate to Admin panel. 3) Find film matching constraints. 4) Click Delete. 5) Confirm deletion.",
+    "EDIT_FILM": "PLAYBOOK: 1) Login. 2) Navigate to Admin panel or film list. 3) Find film matching constraints. 4) Click Edit. 5) Update fields satisfying constraints. 6) Save.",
     "FILM_DETAIL": "PLAYBOOK: 1) On AutoCinema, browse the movie list. 2) Find a movie matching ALL TASK_CONSTRAINTS. 3) Click on that movie to open its detail page.",
     "SEARCH_FILM": "PLAYBOOK: 1) On AutoCinema, find the search bar. 2) Type a movie title that is NOT the excluded term. 3) Submit the search.",
     "OPEN_PREVIEW": "PLAYBOOK: 1) Navigate to the specific book detail page. 2) Find the Open Preview button. 3) Click it.",
@@ -246,6 +266,7 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "DELETE_EMAIL": "PLAYBOOK: 1) Find the email matching constraints. 2) Click the Delete/Trash icon on that email row.",
     "ADD_LABEL": "PLAYBOOK: 1) Find the email matching ALL TASK_CONSTRAINTS. 2) Open that email or select it. 3) Find the Label option. 4) Select a label that is NOT the excluded label_name.",
     "FORWARD_EMAIL": "PLAYBOOK: 1) Find the email matching constraints. 2) Click to open. 3) Click Forward button. 4) Fill in To field if needed. 5) Send.",
+    "REPLY_EMAIL": "PLAYBOOK: 1) Find the email matching ALL constraints (subject, from, body, etc.). 2) Click to open that email. 3) Click Reply button. 4) Type reply message if required. 5) Click Send.",
     "MARK_EMAIL_AS_IMPORTANT": "PLAYBOOK: 1) Find the email matching constraints. 2) Click the Important/Flag icon on that email.",
     "EDIT_DRAFT_EMAIL": "PLAYBOOK: 1) Navigate to Drafts folder. 2) Find draft matching constraints. 3) Click to open/edit the draft.",
     "EMAILS_NEXT_PAGE": "PLAYBOOK: 1) Look at the bottom of the email list for pagination. 2) Click the Next arrow/button.",
@@ -261,12 +282,14 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "ADD_NEW_CALENDAR": "PLAYBOOK: 1) Find the + or Add Calendar button in the left sidebar. 2) Click it to open the modal.",
     "CREATE_CALENDAR": "PLAYBOOK: 1) Click the + button next to Other calendars. 2) Fill in name and description satisfying constraints. 3) Click Create/Save.",
     "EVENT_ADD_ATTENDEE": "PLAYBOOK: 1) Find an event on the calendar. 2) Click on it to open. 3) Click Edit. 4) Find Add Attendee field. 5) Type email satisfying constraints. 6) Save.",
+    "EVENT_ADD_REMINDER": "PLAYBOOK: 1) Find the event matching constraints on the calendar. 2) Click on it to open. 3) Click Edit. 4) Find the Reminders section. 5) Add a reminder by entering a time value (in minutes) satisfying constraints. 6) Save.",
+    "EVENT_REMOVE_REMINDER": "PLAYBOOK: 1) Find event on the calendar matching the title/date constraint — click on it to open details. 2) Click Edit/pencil button. 3) In the edit form, find the REMINDERS section (shows list of reminder times). 4) Find the reminder matching the constraint (e.g., minutes value). 5) Click the X / × / Remove button next to that specific reminder entry. 6) Click Save/Update to confirm.",
     "DELETE_ADDED_EVENT": "PLAYBOOK: 1) Browse calendar events. 2) Find the event matching ALL constraints. 3) Click on it. 4) Click Delete. 5) Confirm.",
-    "CANCEL_ADD_EVENT": "PLAYBOOK: 1) Find the event matching constraints. 2) Click on it. 3) Click Cancel/Delete. 4) Confirm.",
+    "CANCEL_ADD_EVENT": "PLAYBOOK: CANCEL_ADD_EVENT means open the new-event form and then click Cancel (do NOT save). 1) Click + or Add Event button to open the new-event creation form. 2) Fill fields satisfying constraints: set title, location, attendees to constraint values; set date > constraint date; set visibility/calendar to a value NOT the excluded one. 3) Click Cancel/Discard/Close button (NOT Save/Submit) to abandon the creation.",
     "NEW_CALENDAR_EVENT_ADDED": "PLAYBOOK: 1) Click the + or Add Event button. 2) Fill in the event form satisfying ALL constraints. 3) Save the event.",
     "ADD_EVENT": "PLAYBOOK: 1) Click + or on a time slot. 2) Fill ALL fields from TASK_CONSTRAINTS. 3) Save.",
     "VIEW_PENDING_EVENTS": "PLAYBOOK: 1) Switch to a view showing upcoming events. 2) Find events matching constraint. 3) Navigate to or click on that event.",
-    "AUTOLIST_TEAM_MEMBERS_ADDED": "PLAYBOOK: 1) Navigate to Team section. 2) Click Add Member. 3) Search for a member satisfying constraints. 4) Add them.",
+    "AUTOLIST_TEAM_MEMBERS_ADDED": "PLAYBOOK: 1) Navigate to Team tab/section. 2) Click Add Member button. 3) In the search field, type the first member name from the CONTAINS constraints. 4) Click the matching result to add them. 5) Repeat steps 2-4 for each additional required member. 6) Total member count should equal the count constraint.",
     "AUTOLIST_TEAM_ROLE_ASSIGNED": "PLAYBOOK: 1) Go to Team section. 2) Find a member satisfying constraints. 3) Click their role dropdown. 4) Select the required role.",
     "AUTOLIST_EDIT_TASK_MODAL_OPENED": "PLAYBOOK: 1) Browse task list. 2) Find task matching ALL constraints. 3) Click the Edit/Pencil icon to open the edit modal.",
     "AUTOLIST_ADD_TASK_CLICKED": "PLAYBOOK: 1) Find the Add Task button. 2) Click it.",
@@ -278,9 +301,10 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "SEARCH_MEDICAL_ANALYSIS": "PLAYBOOK: 1) Navigate to Medical Records/Analysis. 2) Use search/filter fields. 3) Submit/search.",
     "VIEW_MEDICAL_ANALYSIS": "PLAYBOOK: 1) Navigate to Medical Records. 2) Find the record matching constraints. 3) Click to view details.",
     "OPEN_APPOINTMENT_FORM": "PLAYBOOK: 1) Browse doctor cards. 2) Find doctor matching ALL constraints. 3) Click Book Appointment. 4) Fill in date and time. 5) Open/submit.",
+    "APPOINTMENT_BOOKED_SUCCESSFULLY": "PLAYBOOK: 1) Browse doctor list. 2) Find doctor matching ALL constraints (name, speciality). 3) Click Book Appointment on that doctor's card. 4) Fill the appointment form: select date satisfying date constraint, select time. 5) Click Book/Confirm to submit the booking.",
     "OPEN_CONTACT_DOCTOR_FORM": "PLAYBOOK: 1) Find doctor matching ALL constraints. 2) Click Contact Doctor button.",
     "CONTACT_DOCTOR": "PLAYBOOK: 1) Find doctor matching constraints. 2) Click Contact. 3) Fill the contact form. 4) Submit.",
-    "SEARCH_APPOINTMENT": "PLAYBOOK: 1) Go to Appointments section. 2) Search/filter for matching appointments. 3) View results.",
+    "SEARCH_APPOINTMENT": "PLAYBOOK: 1) Click Appointments in the top navigation. 2) Locate the search/filter fields: doctor_name text input, speciality text input, date picker. 3) For each CONTAINS constraint, type the substring into the matching filter field. For EQUALS constraints, type the exact value. 4) Click Search or Submit (or press Enter) to apply the filters. 5) The filtered appointment list should now show matching results.",
     "REQUEST_QUICK_APPOINTMENT": "PLAYBOOK: 1) Find Quick Appointment button. 2) Fill form satisfying constraints. 3) Submit.",
     "VIEW_DOCTOR_EDUCATION": "PLAYBOOK: 1) Browse doctors list. 2) Find doctor matching ALL constraints. 3) Click on doctor's card. 4) Find Education tab/section. 5) Click it.",
     "COMMENT_ON_POST": "PLAYBOOK: 1) Find a post in the feed. 2) Click the Comment button. 3) Type the EXACT comment text. 4) Submit.",
@@ -290,6 +314,9 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "SEARCH_USERS": "PLAYBOOK: 1) Find the user search bar. 2) Type the query. 3) Submit.",
     "BACK_TO_ALL_JOBS": "PLAYBOOK: 1) Navigate to Jobs section. 2) Find a job satisfying constraints. 3) Click on it. 4) Find and click Back to all jobs link.",
     "EDIT_PROFILE_BIO": "PLAYBOOK: 1) Navigate to Profile/Settings. 2) Find Bio field. 3) Set bio to EXACT value. 4) Save.",
+    "BOOK_A_CONSULTATION": "PLAYBOOK: 1) Browse expert/consultant list. 2) Find expert matching ALL constraints. 3) Click the Book Consultation or Book a Consultation button on that expert's card.",
+    "FAVORITE_EXPERT_SELECTED": "PLAYBOOK: 1) Browse expert/consultant list. 2) Find expert matching ALL constraints. 3) Click the heart/favorite icon to favorite that expert.",
+    "FAVORITE_EXPERT_REMOVED": "PLAYBOOK: 1) Navigate to Favorites or browse expert list. 2) Find favorited expert matching constraints. 3) Click the heart/favorite icon again to remove from favorites.",
     "HIRE_BTN_CLICKED": "PLAYBOOK: 1) Browse expert/consultant list. 2) Find expert matching ALL constraints. 3) Click Hire Now.",
     "HIRE_LATER": "PLAYBOOK: 1) Browse expert list. 2) Find expert matching constraints. 3) Click Hire Later.",
     "HIRE_LATER_REMOVED": "PLAYBOOK: 1) Navigate to Hire Later page. 2) Find expert matching constraints. 3) Click Remove.",
@@ -310,6 +337,8 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "ADD_TO_WISHLIST_HOTEL": "PLAYBOOK: 1) Find hotel matching constraints. 2) Click Add to Wishlist/heart icon.",
     "APPLY_FILTERS": "PLAYBOOK: 1) Find filter controls. 2) Set region/rating/price as specified. 3) Apply the filter.",
     "PEOPLE_DROPDOWN_OPENED": "PLAYBOOK: 1) Find the people/guest selector. 2) Click to open the dropdown. 3) Select the number satisfying the constraint.",
+    "PEOPLE_SELECTED": "PLAYBOOK: 1) Find the people/guest count selector on the page. 2) Click to open dropdown. 3) Select a number satisfying the constraint (NOT the excluded number, or equals the required number).",
+    "DETAILS_TOGGLE": "PLAYBOOK: 1) Browse products. 2) Find the product matching constraints (title, category). 3) Find the product details toggle/expand button on the product card or detail page. 4) Click to toggle/expand the details section.",
     "COUNTRY_SELECTED": "PLAYBOOK: 1) Find the country/destination dropdown. 2) Set other filters per constraints. 3) Open dropdown. 4) Select the specified country.",
     "RESTAURANT_NEXT_PAGE": "PLAYBOOK: 1) Look for pagination at bottom. 2) Click the Next button.",
     "RESTAURANT_PREV_PAGE": "PLAYBOOK: 1) Look for pagination. 2) Click Previous button.",
@@ -317,7 +346,8 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "DROPOFF_PREFERENCE": "PLAYBOOK: 1) Find order matching constraints. 2) Find the dropoff preference selector. 3) Select an option satisfying constraints.",
     "DELIVERY_PRIORITY_SELECTED": "PLAYBOOK: 1) Find order matching constraints. 2) Find delivery priority selector. 3) Select a priority satisfying constraints.",
     "VIEW_DELIVERY_RESTAURANT": "PLAYBOOK: 1) Browse restaurant list. 2) Find restaurant matching constraints. 3) Click on it.",
-    "VIEW_ALL_RESTAURANTS": "PLAYBOOK: 1) Click All Restaurants or equivalent link/tab.",
+    "VIEW_ALL_RESTAURANTS": "PLAYBOOK: 1) Find 'All Restaurants' link or tab in the navigation/header. 2) Click it to show all restaurants without any cuisine/rating filter applied.",
+    "PLACE_ORDER": "PLAYBOOK: 1) Browse restaurants. 2) Find restaurant matching constraints. 3) Open it and find menu item matching constraints. 4) Add to cart. 5) Navigate to cart. 6) Proceed to checkout and complete the order.",
     "OPEN_CHECKOUT_PAGE": "PLAYBOOK: 1) Find order matching constraints. 2) Navigate to checkout.",
     "SEARCH_RESTAURANT": "PLAYBOOK: 1) Find the restaurant search bar. 2) Type EXACT query. 3) Submit search.",
     "VIEW_RESTAURANT": "PLAYBOOK: 1) Browse restaurant listing cards. 2) Find restaurant matching ALL constraints. 3) Click on it to open detail page.",
@@ -333,6 +363,8 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "SHARE_PRODUCT": "PLAYBOOK: 1) Find product matching constraints. 2) Click Share button.",
     "ADD_CLIENT": "PLAYBOOK: 1) Navigate to Clients section. 2) Click Add New Client. 3) Fill form satisfying constraints. 4) Save.",
     "ADD_NEW_MATTER": "PLAYBOOK: 1) Navigate to Matters section. 2) Click Add New Matter. 3) Fill form. 4) Save.",
+    "UPDATE_MATTER": "PLAYBOOK: 1) Navigate to Matters list. 2) Find the matter matching constraints (by title or status). 3) Click Edit or the matter row to open. 4) Update the specified fields. 5) Save changes.",
+    "NEW_LOG_ADDED": "PLAYBOOK: 1) Navigate to Billing/Logs section. 2) Click Add Log or + button. 3) Fill in status, client, date, hours satisfying constraints. 4) Save.",
     "SORT_MATTER_BY_CREATED_AT": "PLAYBOOK: 1) Navigate to Matters list. 2) Find the created_at column header. 3) Click it to sort.",
     "CHANGE_USER_NAME": "PLAYBOOK: 1) Navigate to Settings or Profile. 2) Find the user name field. 3) Set it to the specified value. 4) Save.",
     "WRITE_JOB_TITLE": "PLAYBOOK: 1) Look for Post a Job or + button. 2) Click it. 3) Type the EXACT job title from TASK_CREDENTIALS. 4) Do NOT click submit.",
@@ -368,6 +400,8 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "AUTOLIST_SELECT_DATE_FOR_TASK": "PLAYBOOK: 1) Find task. 2) Click Edit or date field. 3) Select date satisfying constraint. 4) Confirm.",
     "DELETE_BOOK": "PLAYBOOK: 1) Login with credentials. 2) Navigate to your books. 3) Find matching book. 4) Click Delete. 5) Confirm.",
     "EDIT_BOOK": "PLAYBOOK: 1) Login. 2) Find book matching constraints. 3) Click Edit. 4) Modify fields. 5) Save.",
+    "EDIT_USER_BOOK": "PLAYBOOK: 1) Login with provided credentials. 2) Navigate to your books / profile. 3) Find the book matching constraints. 4) Click Edit. 5) Update fields. 6) Save.",
+    "SHARE_BOOK": "PLAYBOOK: 1) Browse book list. 2) Find book matching ALL constraints. 3) Click on it to open detail page. 4) Find Share button. 5) Click it.",
     "REMOVE_FROM_READING_LIST": "PLAYBOOK: 1) Login. 2) Navigate to Reading List. 3) Find book satisfying constraints. 4) Click Remove.",
     "CONTACT_BOOK": "PLAYBOOK: 1) Navigate to Contact page. 2) Fill form satisfying constraints. 3) Submit.",
     "REGISTRATION_BOOK": "PLAYBOOK: 1) Navigate to Register page. 2) Fill in username, email, password. 3) Submit.",
@@ -385,23 +419,26 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "DATE_DROPDOWN_OPENED": "PLAYBOOK: 1) Find date selector. 2) Click to open. 3) Select date satisfying constraint. 4) Confirm.",
     "TIME_DROPDOWN_OPENED": "PLAYBOOK: 1) Find time selection dropdown. 2) Click to open. 3) Select time matching constraint. 4) Confirm.",
     "BILLING_SEARCH": "PLAYBOOK: 1) Navigate to Billing section. 2) Find search/filter inputs. 3) Enter query. 4) Select date_filter satisfying constraints. 5) Apply.",
-    "LOG_EDITED": "PLAYBOOK: 1) Navigate to Logs/Time entries. 2) Find log entry matching constraints. 3) Click Edit. 4) Make change. 5) Save.",
+    "LOG_EDITED": "PLAYBOOK: 1) Navigate to Billing/Logs section (left sidebar nav — look for 'Billing' or 'Logs'). 2) Find a time log row where status is NOT the excluded status AND client is NOT the excluded client. 3) Click the Edit (pencil) icon on that row to open the edit form. 4) Modify any allowed field (e.g., hours or description). 5) Click Save.",
     "ARCHIVE_MATTER": "PLAYBOOK: 1) Navigate to Matters. 2) Find matter satisfying constraints. 3) Click Archive. 4) Confirm.",
     "VIEW_CLIENT_DETAILS": "PLAYBOOK: 1) Navigate to Clients. 2) Find client matching constraints. 3) Click to open details.",
     "VIEW_MATTER_DETAILS": "PLAYBOOK: 1) Navigate to Matters. 2) Find matter matching constraints. 3) Click to open details.",
     "SEND_EMAIL": "PLAYBOOK: 1) Click Compose/New Email. 2) Fill To, Subject, Body satisfying constraints. 3) Click Send.",
     "SEARCH_EMAIL": "PLAYBOOK: 1) Find Search bar. 2) Type query. 3) Submit.",
     "DELETE_REVIEW": "PLAYBOOK: 1) Find restaurant matching constraints. 2) Open it. 3) Find review matching constraints. 4) Click Delete. 5) Confirm.",
-    "RESTAURANT_FILTER": "PLAYBOOK: 1) Find cuisine filter. 2) Apply filter satisfying constraints.",
+    "EMPTY_CART": "PLAYBOOK: 1) Navigate to Cart page (cart icon). 2) Find Empty Cart or Clear Cart button. 3) Click it. 4) Confirm if prompted.",
+    "RESTAURANT_FILTER": "PLAYBOOK: 1) On the restaurants listing page, find the CUISINE filter (dropdown or button group) and the RATING filter (slider or numeric input). 2) Set cuisine to a value matching the CONTAINS constraint (find an option that includes the substring). 3) Set rating filter to satisfy the GREATER_THAN constraint (enter the minimum value). 4) Click Apply or the filter button. 5) Verify the filtered restaurant list appears.",
     "ADD_TO_CART_MENU_ITEM": "PLAYBOOK: 1) Browse restaurants. 2) Find restaurant. 3) Find menu item matching constraints. 4) Add to cart.",
     "ADD_TO_CART_MODAL_OPEN": "PLAYBOOK: 1) Find restaurant matching constraints. 2) Click to view menu. 3) Find menu item matching price constraint. 4) Click to open add-to-cart modal.",
     "QUICK_ORDER_STARTED": "PLAYBOOK: 1) Find Quick Order button on any restaurant card. 2) Click it.",
     "FAQ_OPENED": "PLAYBOOK: 1) Navigate to FAQ page. 2) Find FAQ item matching constraint. 3) Click to expand.",
     "MESSAGE_HOST": "PLAYBOOK: 1) Find hotel matching ALL constraints. 2) Click to open. 3) Find Message Host button. 4) Type message. 5) Send.",
     "EDIT_CHECK_IN_OUT_DATES": "PLAYBOOK: 1) Find listing matching constraints. 2) Open booking form. 3) Modify dates. 4) Save.",
+    "VIEW_HOTEL": "PLAYBOOK: 1) Browse hotel listing cards. 2) Find hotel matching ALL constraints (title, host_name, price, rating, reviews). 3) Click on that hotel card to open the detail page.",
     "WISHLIST_OPENED": "PLAYBOOK: 1) Find Wishlist/Saved Hotels icon. 2) Click to open.",
     "REMOVE_FROM_WISHLIST": "PLAYBOOK: 1) Open wishlist. 2) Find listing matching constraints. 3) Click Remove.",
     "JOBS_NAVBAR": "PLAYBOOK: 1) Find Jobs tab in navbar. 2) Click it.",
+    "VIEW_USER_PROFILE": "PLAYBOOK: 1) Find the user matching constraints (name, username). 2) Click on their name or profile link to open their profile page.",
     "EDIT_PROFILE": "PLAYBOOK: 1) Find user matching constraints. 2) Navigate to Profile. 3) Click Edit Profile. 4) Update fields. 5) Save.",
     "POST_STATUS": "PLAYBOOK: 1) Find status input on feed. 2) Click in text box. 3) Type content satisfying constraints. 4) Click Post.",
     "REMOVE_POST": "PLAYBOOK: 1) Find post satisfying constraints. 2) Click 3-dot menu. 3) Click Remove/Delete. 4) Confirm.",
@@ -412,8 +449,8 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "SUBMIT_JOB": "PLAYBOOK: 1) Navigate to Post a Job. 2) Fill title, rate_from, rate_to satisfying constraints. 3) Submit.",
     "HIRE_LATER_START": "PLAYBOOK: 1) Navigate to Hire Later page. 2) Find expert matching constraints. 3) Click Start Hiring.",
     "EDIT_ABOUT": "PLAYBOOK: 1) Navigate to profile. 2) Find About/Bio section. 3) Click Edit. 4) Update text satisfying constraints. 5) Save.",
-    "SELECT_CALENDAR": "PLAYBOOK: 1) Find calendar list/sidebar. 2) Find calendar matching constraints. 3) Click to select it.",
-    "UNSELECT_CALENDAR": "PLAYBOOK: 1) Find calendar list. 2) Find calendar matching constraints. 3) Click to unselect it.",
+    "SELECT_CALENDAR": "PLAYBOOK: 1) Find the LEFT SIDEBAR calendar list. Each calendar shows a COLORED CHECKBOX beside its name. 2) Find the calendar whose name MATCHES the constraint (equals or contains the required value). 3) Click the colored checkbox/square beside that calendar name to SELECT (show) it. Do NOT click the calendar name text itself — click the checkbox.",
+    "UNSELECT_CALENDAR": "PLAYBOOK: 1) Find the calendar list in the LEFT SIDEBAR — each calendar has a COLORED CHECKBOX/SQUARE beside its name. 2) Identify the target calendar: if constraint is 'name NOT Travel', click the checkbox of ANY calendar EXCEPT Travel. If constraint is 'name equals Work', click Work's checkbox. 3) Click the COLORED CHECKBOX (not the text label) to UNSELECT that calendar. The checkbox will become unchecked/hollow.",
     "DOCTOR_CONTACTED_SUCCESSFULLY": "PLAYBOOK: 1) Find doctor matching ALL constraints. 2) Open Contact Doctor form. 3) Fill form satisfying constraints. 4) Submit.",
     "VIEW_DOCTOR_AVAILABILITY": "PLAYBOOK: 1) Browse doctors list. 2) Find doctor matching constraints. 3) Click profile. 4) Navigate to Availability tab.",
     "SEARCH_MATTER": "PLAYBOOK: 1) Find Matters search bar. 2) Type query satisfying constraints. 3) Submit.",
@@ -425,6 +462,7 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "ADDRESS_ADDED": "PLAYBOOK: 1) Find delivery address section. 2) Click Add Address. 3) Type exact address. 4) Fill additional fields. 5) Save.",
     "SHARE_HOTEL": "PLAYBOOK: 1) Find hotel matching ALL constraints. 2) Click to open. 3) Find Share button. 4) Enter recipient email. 5) Send.",
     "POPULAR_HOTELS_VIEWED": "PLAYBOOK: 1) Find Popular Hotels section. 2) Apply rating filter if available. 3) Click to view.",
+    "BACK_TO_ALL_HOTELS": "PLAYBOOK: 1) Find a hotel listing satisfying constraints. 2) Click on it to open detail page. 3) Find the Back / Back to all hotels link or breadcrumb. 4) Click it to return to the full hotel listing.",
     "TRIP_DETAILS": "PLAYBOOK: 1) View trips list. 2) Find trip matching ALL constraints. 3) Click to view details.",
     "SELECT_CAR": "PLAYBOOK: 1) Find ride matching constraints. 2) Click to open. 3) Select car option.",
     "SEARCH_DESTINATION": "PLAYBOOK: 1) Find destination search bar. 2) Type a destination NOT the excluded value. 3) Submit.",
@@ -440,6 +478,58 @@ TASK_PLAYBOOKS: dict[str, str] = {
     "EDIT_TASK": "PLAYBOOK: 1) Find task matching constraints. 2) Click Edit. 3) Update fields. 4) Save.",
     "COMPLETE_TASK": "PLAYBOOK: 1) Find task matching constraints. 2) Click Complete/Done/Checkmark.",
     "JOB_POSTING": "PLAYBOOK: 1) Find Post a Job button. 2) Click it. 3) Type EXACT job title. 4) Submit.",
+    # ---- AutoDiscord (8015) playbooks ----
+    "VIEW_SERVERS": "PLAYBOOK: 1) The server list is the far-left vertical stack of round icons. 2) You are already viewing it. If needed, click the server list icon or home button to show all servers. 3) The task is complete when the server list is visible.",
+    "CREATE_SERVER": "PLAYBOOK: 1) Find the + (Add Server) button at the bottom of the far-left server icon list. 2) Click it to open the server creation form. 3) Fill in the server name satisfying constraints. 4) Submit/Create.",
+    "SETTINGS_ACCOUNT": "PLAYBOOK: 1) Click the gear/settings icon at the bottom-left near your username. 2) In the Settings page, find the Account section/tab in the left nav. 3) Click Account to open account settings.",
+    "SELECT_SERVER": "PLAYBOOK: 1) Find the server list on the far-left sidebar (vertical stack of round icons). 2) Find a server satisfying constraints (NOT the excluded server name). 3) Click that server icon to select it.",
+    "OPEN_SETTINGS_DISCORD": "PLAYBOOK: 1) Find the Settings gear icon at the bottom-left corner near your username. 2) Click it to open the Settings page.",
+    "JOIN_VOICE_CHANNEL": "PLAYBOOK: 1) In the left panel channel list, find voice channels (speaker icon). 2) Find the voice channel satisfying constraints (NOT the excluded channel). 3) Click on it. 4) If a 'Join Voice Channel' button appears, click it.",
+    "VOICE_MUTE_TOGGLE": "PLAYBOOK: 1) You must be in a voice channel. If not, join one first. 2) Find the microphone/mute button in the bottom-left voice panel. 3) Check current state: if muted=True you need to unmute (click mic button); if muted=False it is already unmuted. 4) Click the mic/mute button to toggle to the required state.",
+    "SELECT_CHANNEL": "PLAYBOOK: 1) Make sure the correct server is selected. 2) In the left channel list, find the text channel (#name) satisfying constraints. 3) Click on that channel to open it.",
+    "SELECT_DM": "PLAYBOOK: 1) Find the Direct Messages section (person icon or DMs at top of left panel). 2) Click to open DMs view. 3) Find the DM conversation satisfying constraints. 4) Click on it.",
+    "VIEW_DMS": "PLAYBOOK: 1) Find Direct Messages section (person/envelope icon or DMs link in sidebar). 2) Click it to open the DMs view and list all direct messages.",
+    "SEND_MESSAGE_DISCORD": "PLAYBOOK: 1) Navigate to the correct channel or DM satisfying constraints. 2) Find the message text input box at the bottom of the main panel. 3) Click it to focus. 4) Type the message satisfying constraints. 5) Press Enter or click the Send button.",
+    # ---- AutoBittensor (8014) playbooks ----
+    "EXECUTE_SELL": "PLAYBOOK: 1) Navigate to the trading/sell section in the Bittensor explorer. 2) Find the sell form or sell button. 3) Enter amount satisfying constraints. 4) Click Execute Sell / Confirm.",
+    "FAVORITE_SUBNET": "PLAYBOOK: 1) Navigate to Subnets tab/page. 2) Find the subnet table. 3) Each row has a STAR icon on the leftmost column — click the star on the row where subnet name does NOT match the excluded name. 4) Use list_cards tool first to identify which subnet row has the non-excluded name, then click its star icon.",
+    "DISCONNECT_WALLET": "PLAYBOOK: 1) Navigate to Wallets section. 2) Find the wallet matching wallet_name constraint. 3) Click the Disconnect button next to that wallet. 4) Confirm if prompted.",
+    "CONNECT_WALLET": "PLAYBOOK: 1) Find the Wallets or Connect Wallet section. 2) Click Connect Wallet button. 3) Select the wallet type matching the name constraint (Talisman, Polkadot.js, etc.). 4) Confirm connection.",
+    "VIEW_SUBNET": "PLAYBOOK: 1) Find Subnets list. 2) Find subnet matching ALL constraints (netuid, name, etc.). 3) Click on it to open subnet detail.",
+    "VIEW_VALIDATOR": "PLAYBOOK: 1) Find Validators list. 2) Find validator matching ALL constraints. 3) Click on it to view validator detail.",
+    "VIEW_BLOCK": "PLAYBOOK: 1) Find Blocks list. 2) Find the block matching constraints. 3) Click on it to view block detail.",
+    # ---- AutoConnect (8008) experience playbooks ----
+    "ADD_EXPERIENCE": "PLAYBOOK: 1) Navigate to Profile. 2) Find Experience section. 3) Click Add Experience. 4) Fill company (exact from constraint), title (NOT the excluded title), location (exact), description (contains required text). 5) Save.",
+    "EDIT_EXPERIENCE": "PLAYBOOK: 1) Navigate to Profile → Experience section. 2) Find experience entry matching company constraint. 3) Click Edit. 4) Update fields satisfying constraints. 5) Save.",
+    # ---- AutoRide (8012) ----
+    "ENTER_LOCATION": "PLAYBOOK: 1) Find the pickup/location input field (placeholder: 'Pickup location', 'Where from?', 'Enter pickup'). 2) Click it to focus. 3) Type the EXACT location value from TASK_CONSTRAINTS. 4) Wait for autocomplete suggestions. 5) Click the matching suggestion or press Enter to confirm.",
+    "ENTER_DESTINATION": "PLAYBOOK: 1) Find the destination input field. 2) Click it. 3) Type a destination that is NOT the excluded value. 4) Confirm selection.",
+    "NEXT_PICKUP": "PLAYBOOK: 1) Look for a 'Next Pickup' or 'Upcoming' section on the page. 2) Find the pickup/ride matching the constraints. 3) Click on it or its details button.",
+    # ---- AutoMail (8005) ----
+    "FORWARD_EMAIL": "PLAYBOOK: 1) Browse the email list. 2) Find the email matching ALL constraints (subject, from, date). 3) Click to open it. 4) Click the Forward button. 5) Enter recipient email if prompted. 6) Click Send.",
+    "STAR_AN_EMAIL": "PLAYBOOK: 1) Browse the inbox email list. 2) Find the email matching ALL constraints. 3) Click the star/bookmark icon on that email row (do NOT open the email, click the star directly on the list row).",
+    # ---- AutoZone (8002) ----
+    "CAROUSEL_SCROLL": "PLAYBOOK: 1) Find a carousel section on the page (NOT the excluded carousel). 2) Click the Next/right arrow button of that carousel to scroll.",
+    "CATEGORY_FILTER": "PLAYBOOK: 1) Find the category filter panel on the left sidebar. 2) Find the category matching the specified value. 3) Click on it to filter.",
+    # ---- AutoHealth (8013) ----
+    "VIEW_DOCTOR_EDUCATION": "PLAYBOOK: 1) Browse doctor cards. 2) Find the doctor matching ALL constraints (name, speciality). 3) Click on the doctor card to open their profile. 4) Click the 'Education' tab in the profile. 5) The education section should now be visible.",
+    "VIEW_DOCTOR_AVAILABILITY": "PLAYBOOK: 1) Find the doctor matching ALL constraints. 2) Click their card/profile. 3) Click the 'Availability' tab.",
+    "APPOINTMENT_BOOKED_SUCCESSFULLY": "PLAYBOOK: 1) Browse doctor list (click Doctors nav if needed). 2) Find doctor matching ALL constraints (name, speciality). 3) Click 'Book Appointment' on that doctor's card. 4) Fill appointment form: select date satisfying the date constraint (must be GREATER THAN OR EQUAL TO the given date), select any available time. 5) Click Book/Confirm/Submit to complete booking.",
+    "SEARCH_APPOINTMENT": "PLAYBOOK: 1) Click 'Appointments' in the top navigation. 2) Find the search form with doctor_name, speciality, and date fields. 3) Fill each field based on TASK_CONSTRAINTS: for CONTAINS constraints type the value as-is; for EQUALS type the exact value. 4) Click Search to apply filters.",
+    # ---- AutoLodge (8007) ----
+    "BACK_TO_ALL_HOTELS": "PLAYBOOK: 1) Browse hotel listings. 2) Find a hotel satisfying ALL constraints. 3) Click on it to open the hotel detail page. 4) Find the Back or 'Back to all hotels' link/breadcrumb at the top of the page. 5) Click it.",
+    "SHARE_HOTEL": "PLAYBOOK: 1) Find hotel matching ALL constraints. 2) Click to open detail. 3) Find Share button. 4) Fill recipient email if prompted. 5) Submit.",
+    "REMOVE_FROM_READING_LIST": "PLAYBOOK: 1) Login if credentials provided. 2) Navigate to Reading List or profile. 3) Find the book matching ALL constraints. 4) Click Remove/Delete.",
+    # ---- AutoDelivery (8006) ----
+    "ADD_TO_CART_MENU_ITEM": "PLAYBOOK: 1) Browse restaurants. 2) Find restaurant matching constraints. 3) Click to open menu. 4) Find menu item matching price/name constraints. 5) Click Add to Cart.",
+    "PLACE_ORDER": "PLAYBOOK: 1) Find restaurant matching constraints. 2) Open menu. 3) Find item matching constraints. 4) Add to cart. 5) Proceed to checkout. 6) Complete order.",
+    # ---- AutoCalendar (8010) ----
+    "CREATE_CALENDAR": "PLAYBOOK: 1) Find the '+ Add Calendar' button in the left sidebar (below the calendar list). 2) Click it to open the creation modal. 3) Fill in name satisfying constraints. 4) Fill description if required. 5) Click Create/Save.",
+    "CANCEL_ADD_EVENT": "PLAYBOOK: CANCEL means open the new-event form then click Cancel WITHOUT saving. 1) Click + or Add Event button to open the event form. 2) Fill fields as needed to satisfy constraints (title, date NOT excluded, etc.). 3) Click Cancel/Discard/Close button (NOT Save). The event must NOT be saved.",
+    "ADD_EVENT": "PLAYBOOK: 1) Click + or on a time slot in the calendar. 2) Fill in title, date, time, and all other required fields from TASK_CONSTRAINTS. 3) Click Save/Create to add the event.",
+    "ABOUT_FEATURE_CLICK": "PLAYBOOK: 1) Click on the About nav link to go to the About page. 2) Scroll down if needed. 3) Find the feature card matching the constraint (CONTAINS or NOT the excluded text). 4) Click on that feature card.",
+    "CONTACT_BOOK": "PLAYBOOK: 1) Navigate to Contact page. 2) Fill name, email, message satisfying constraints. 3) Submit form.",
+    "BOOK_A_CONSULTATION": "PLAYBOOK: 1) Browse expert/consultant list. 2) Find expert matching ALL constraints. 3) Click the 'Book Consultation' or 'Book a Consultation' button.",
     "GENERAL": "PLAYBOOK: Analyze the task carefully, identify the key action required, and execute the most direct path. Use TASK_CONSTRAINTS to find the correct item and fill forms.",
 }
 
@@ -453,7 +543,6 @@ SEARCH_INPUT_IDS: dict[str, str] = {
     "autodelivery": "food-search",
     "autobooks": "input",
     "autozone": "input",
-    "autoconnect": "input",
     "autohealth": "input",
 }
 

@@ -59,7 +59,7 @@ def build_user_prompt(
 
     # --- Website hints ---
     if website_hint:
-        hint_capped = website_hint[:150] + "..." if len(website_hint) > 150 else website_hint
+        hint_capped = website_hint[:350] + "..." if len(website_hint) > 350 else website_hint
         parts.append(f"\nSITE_HINTS: {hint_capped}")
 
     # --- Credentials ---
@@ -72,7 +72,7 @@ def build_user_prompt(
 
     # --- Playbook ---
     if playbook:
-        playbook_capped = playbook[:350] + "..." if len(playbook) > 350 else playbook
+        playbook_capped = playbook[:500] + "..." if len(playbook) > 500 else playbook
         parts.append(f"\n{playbook_capped}")
 
     # --- Page summary (DOM digest, early steps only) ---

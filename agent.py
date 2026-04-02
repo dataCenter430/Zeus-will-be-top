@@ -183,6 +183,21 @@ async def handle_act(
     if state.task_type.startswith("LOGIN_THEN_") and not state.login_done:
         shortcut_type = "login"
 
+    # Don't use the generic contact shortcut when constraints specify specific field values
+    # (e.g. CONTACT_FORM_SUBMIT with email/username constraints) — let LLM fill them correctly
+    if shortcut_type == "contact" and state.constraints and state.task_type in (
+        "CONTACT_FORM_SUBMIT", "CONTACT", "DOCTOR_CONTACTED_SUCCESSFULLY", "CONTACT_DOCTOR",
+    ):
+        shortcut_type = None
+
+    # Don't use the registration shortcut when specific credentials are constrained —
+    # the generic shortcut uses placeholder tokens that may not match required values
+    if shortcut_type == "registration" and state.constraints and any(
+        c.field in ("username", "email", "signup_username", "signup_email", "password")
+        for c in state.constraints
+    ):
+        shortcut_type = None
+
     if shortcut_type and soup and candidates:
         shortcut_actions = try_shortcut(shortcut_type, candidates, soup, step)
         if shortcut_actions is not None:

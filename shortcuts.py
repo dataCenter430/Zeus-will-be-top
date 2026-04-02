@@ -86,8 +86,9 @@ def try_quick_click(prompt: str, url: str, seed: str | None, step: int) -> list[
 
     # --- Season 1 overfit additions ---
 
-    # Calendar view switching (autocalendar 8010)
+    # Calendar shortcuts (autocalendar 8010)
     if port == 8010:
+        # View switching
         for view_name in ("day", "week", "month"):
             if f"switch to {view_name}" in t or f"{view_name} view" in t:
                 label_map = {"day": "Select Day view", "week": "Select Week view", "month": "Select Month view"}
@@ -96,6 +97,69 @@ def try_quick_click(prompt: str, url: str, seed: str | None, step: int) -> list[
                 elif step == 1:
                     return _click("aria-label", label_map.get(view_name, f"Select {view_name.title()} view"))
                 return []
+
+        # UNSELECT_CALENDAR — click the colored checkbox of the target calendar
+        if re.search(r"unselect\s+(a\s+)?calendar", t, re.IGNORECASE):
+            m_not = re.search(r"(?:name|calendar)\s+(?:NOT\s+equals?|is\s+NOT|does\s+NOT\s+(?:equal|contain))\s+['\"]([^'\"]+)['\"]", prompt, re.IGNORECASE)
+            m_eq = re.search(r"(?:name|calendar)\s+(?:equals?|is|=|contains?)\s+['\"]([^'\"]+)['\"]", prompt, re.IGNORECASE)
+            if m_eq:
+                name = m_eq.group(1)
+                return _click_xpath(
+                    f"//li[.//*[contains(text(),'{name}')]]//input[@type='checkbox']"
+                    f"|//div[.//*[contains(text(),'{name}')]]//input[@type='checkbox']"
+                    f"|//*[contains(@class,'calendar')][.//*[contains(text(),'{name}')]]//input[@type='checkbox']"
+                    f"|//*[contains(@class,'calendar')][.//*[contains(text(),'{name}')]]//*[contains(@class,'checkbox') or contains(@class,'color')]"
+                )
+            elif m_not:
+                excluded = m_not.group(1)
+                return _click_xpath(
+                    f"(//li[not(.//*[contains(text(),'{excluded}')])][.//input[@type='checkbox']]//input[@type='checkbox'])[1]"
+                    f"|(//div[contains(@class,'calendar-item')][not(.//*[contains(text(),'{excluded}')])][.//input[@type='checkbox']]//input[@type='checkbox'])[1]"
+                    f"|(//*[contains(@class,'calendarItem') or contains(@class,'calendar-item')][not(.//*[contains(text(),'{excluded}')])]//input[@type='checkbox'])[1]"
+                )
+
+        # SELECT_CALENDAR — click checkbox of specified calendar
+        if re.search(r"select\s+(a\s+|the\s+)?calendar\s+(?:where|named|with|that)", t, re.IGNORECASE):
+            m_eq = re.search(r"(?:name|calendar)\s+(?:equals?|is|=|contains?)\s+['\"]([^'\"]+)['\"]", prompt, re.IGNORECASE)
+            m_not = re.search(r"(?:name|calendar)\s+(?:NOT\s+equals?|is\s+NOT|does\s+NOT\s+(?:equal|contain))\s+['\"]([^'\"]+)['\"]", prompt, re.IGNORECASE)
+            if m_eq:
+                name = m_eq.group(1)
+                return _click_xpath(
+                    f"//li[.//*[contains(text(),'{name}')]]//input[@type='checkbox']"
+                    f"|//div[.//*[contains(text(),'{name}')]]//input[@type='checkbox']"
+                    f"|//*[contains(@class,'calendar')][.//*[contains(text(),'{name}')]]//*[contains(@class,'checkbox') or @type='checkbox']"
+                )
+            elif m_not:
+                excluded = m_not.group(1)
+                return _click_xpath(
+                    f"(//li[not(.//*[contains(text(),'{excluded}')])][.//input[@type='checkbox']]//input[@type='checkbox'])[1]"
+                    f"|(//*[contains(@class,'calendarItem') or contains(@class,'calendar-item')][not(.//*[contains(text(),'{excluded}')])]//input[@type='checkbox'])[1]"
+                )
+
+        # EVENT_REMOVE_REMINDER — multi-step: open event → Edit → click X on reminder
+        if re.search(r"remove\s+(a\s+)?reminder|event.*remove.*reminder", t, re.IGNORECASE):
+            m_event = re.search(r"(?:event|title)\s+(?:equals?|is|=|contains?)\s+['\"]([^'\"]+)['\"]", prompt, re.IGNORECASE)
+            event_name = m_event.group(1) if m_event else ""
+            if step == 0:
+                if event_name:
+                    return _click_xpath(f"//*[contains(text(),'{event_name}')]")
+                return _click_xpath("(//*[contains(@class,'event') or contains(@class,'Event')])[1]")
+            elif step == 1:
+                return _click_xpath(
+                    "//button[contains(text(),'Edit') or contains(@aria-label,'Edit')]"
+                    "|//*[contains(@class,'edit') or contains(@id,'edit')]"
+                )
+            elif step == 2:
+                return _click_xpath(
+                    "//button[contains(@aria-label,'Remove reminder') or contains(@class,'removeReminder')]"
+                    "|//*[contains(@class,'reminder')]//*[contains(@class,'remove') or contains(@class,'delete') or contains(@aria-label,'remove') or text()='×' or text()='✕']"
+                    "|(//*[contains(@class,'reminder') or contains(@id,'reminder')]//button[contains(@class,'close') or contains(@class,'delete') or contains(text(),'×')])[1]"
+                )
+            elif step == 3:
+                return _click_xpath(
+                    "//button[contains(text(),'Save') or contains(text(),'Update') or @type='submit']"
+                )
+            return []
 
     # Navbar hires (autowork 8009)
     if port == 8009:
@@ -118,9 +182,17 @@ def try_quick_click(prompt: str, url: str, seed: str | None, step: int) -> list[
     # View pending events (autocrm 8004)
     if port == 8004 and "pending" in t and "event" in t:
         if step == 0:
-            return _click("id", "appointments-nav")
+            return _click_xpath(
+                "//*[@id='appointments-nav']"
+                "|//nav//*[contains(text(),'Appointment') or contains(text(),'appointment')]"
+                "|//a[contains(@href,'appointment')]"
+            )
         elif step == 1:
-            return _click("id", "toggle-future-events")
+            return _click_xpath(
+                "//*[@id='toggle-future-events']"
+                "|//button[contains(text(),'Future') or contains(text(),'Upcoming') or contains(text(),'Pending')]"
+                "|//*[contains(@class,'toggle') and (contains(text(),'Future') or contains(text(),'Pending'))]"
+            )
         return []
 
     # Enter location (autodrive 8012)
@@ -158,12 +230,198 @@ def try_quick_click(prompt: str, url: str, seed: str | None, step: int) -> list[
             return _click_xpath("//button[contains(@id, 'add-label-btn') or contains(@id, 'add-label-button')]")
         return []
 
+    # View all restaurants (autodelivery 8006)
+    if port == 8006 and re.search(r"show\s+me\s+all\s+restaurants|show\s+all\s+restaurants", t):
+        return _click_xpath(
+            "//a[contains(translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'all restaurants')"
+            " or contains(@href,'restaurants')]"
+            " | //button[contains(translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'all restaurants')]"
+        )
+
     # Search delivery restaurant (autodelivery 8006)
     if port == 8006 and "search" in t and "restaurant" in t:
         m2 = re.search(r"(?:exactly |query is |query equals? )['\"]([^'\"]+)['\"]", prompt)
         if m2 and step == 0:
             return [{"type": "TypeAction", "text": m2.group(1), "selector": _sel_attr("id", "find-food")}]
         return []
+
+    # ---------------------------------------------------------------------------
+    # autodiscord (8015) — React SPA: all shortcuts use XPath, step-aware
+    # ---------------------------------------------------------------------------
+    if port == 8015:
+        # VIEW_SERVERS — server list is always on left, just navigate home
+        if re.search(r"view\s+(the\s+)?list\s+of.*servers|view\s+servers", t, re.IGNORECASE):
+            return _click_xpath(
+                "//a[@aria-label='Direct Messages' or @aria-label='Home' or contains(@href,'/@me')]"
+                "|//*[contains(@class,'homeButton') or contains(@id,'home')]"
+            )
+
+        # CREATE_SERVER — click + button, type name, submit
+        if re.search(r"create\s+a\s+(new\s+)?server", t, re.IGNORECASE):
+            if step == 0:
+                return _click_xpath(
+                    "//*[@aria-label='Add a Server' or @aria-label='Create Server' or @title='Add a Server']"
+                    "|//button[contains(@class,'addServer') or contains(@id,'add-server')]"
+                    "|//*[contains(@class,'circleIconButton') or contains(@class,'addButton')][.//span[text()='+']]"
+                    "|(//nav[contains(@aria-label,'Server') or contains(@class,'server')]//button)[last()]"
+                )
+            elif step == 1:
+                m = re.search(r"name\s+(?:equals?|is|=)\s+['\"]([^'\"]+)['\"]", prompt, re.IGNORECASE)
+                name = m.group(1) if m else "My Server"
+                return [{"type": "TypeAction", "text": name, "selector": {
+                    "type": "xpathSelector", "attribute": None, "case_sensitive": False,
+                    "value": "//input[@type='text'][contains(@placeholder,'server') or contains(@placeholder,'name') or contains(@name,'name') or contains(@id,'name')]"
+                }}]
+            elif step == 2:
+                return _click_xpath("//button[contains(text(),'Create') or @type='submit'][last()]")
+            return []
+
+        # SETTINGS_ACCOUNT — gear icon → Account tab
+        if re.search(r"account\s+settings|settings.*account", t, re.IGNORECASE):
+            if step == 0:
+                return _click_xpath(
+                    "//*[@aria-label='User Settings' or @aria-label='Settings']"
+                    "|//button[contains(@class,'settingsIcon') or contains(@id,'settings-gear') or contains(@class,'gear')]"
+                    "|//*[contains(@data-testid,'settings')]"
+                )
+            elif step == 1:
+                return _click_xpath(
+                    "//*[contains(text(),'My Account') or (contains(text(),'Account') and not(contains(text(),'Voice')))]"
+                    "|//*[@href='#account' or contains(@id,'account')]"
+                )
+            return []
+
+        # OPEN_SETTINGS — just click the gear icon
+        if re.search(r"open\s+(the\s+)?settings\s+page|navigate.*settings", t, re.IGNORECASE):
+            return _click_xpath(
+                "//*[@aria-label='User Settings' or @aria-label='Settings']"
+                "|//button[contains(@class,'settingsIcon') or contains(@class,'gear')]"
+                "|//*[contains(@id,'settings-gear') or contains(@data-testid,'settings')]"
+            )
+
+        # SELECT_SERVER — click a server icon (second one, skipping DMs home)
+        if re.search(r"select\s+(the\s+|a\s+)?server\s+(from|in)\s+the\s+server\s+list|select\s+server\s+from", t, re.IGNORECASE):
+            m_eq = re.search(r"name\s+(?:equals?|is|=)\s+['\"]([^'\"]+)['\"]", prompt, re.IGNORECASE)
+            m_not = re.search(r"name\s+(?:NOT\s+equals?|is\s+NOT|does\s+NOT\s+equal)\s+['\"]([^'\"]+)['\"]", prompt, re.IGNORECASE)
+            if m_eq:
+                nm = m_eq.group(1)
+                return _click_xpath(
+                    f"//*[contains(@aria-label,'{nm}') and (contains(@class,'server') or contains(@class,'guild'))]"
+                    f"|//nav[contains(@aria-label,'Server') or contains(@class,'guilds')]//*[contains(text(),'{nm}')]"
+                )
+            elif m_not:
+                exc = m_not.group(1)
+                return _click_xpath(
+                    f"(//nav[contains(@aria-label,'Server') or contains(@class,'guilds')]//*[not(@aria-label='{exc}') and (contains(@class,'listItem') or contains(@class,'server'))])[2]"
+                )
+            return _click_xpath(
+                "(//nav[contains(@aria-label,'Servers') or contains(@class,'guilds')]//div[contains(@class,'listItem')])[2]"
+                "|(//nav[contains(@aria-label,'Servers') or contains(@class,'guilds')]//*[contains(@class,'server') or contains(@class,'guild')])[2]"
+            )
+
+        # JOIN_VOICE_CHANNEL — click a voice channel
+        if re.search(r"join\s+(a\s+|the\s+)?voice\s+channel", t, re.IGNORECASE):
+            m_not = re.search(r"name\s+(?:NOT\s+equals?|is\s+NOT|does\s+NOT\s+equal)\s+['\"]([^'\"]+)['\"]", prompt, re.IGNORECASE)
+            m_eq = re.search(r"name\s+(?:equals?|is|=)\s+['\"]([^'\"]+)['\"]", prompt, re.IGNORECASE)
+            if m_eq:
+                nm = m_eq.group(1)
+                return _click_xpath(
+                    f"//*[contains(@class,'voiceChannel') or contains(@class,'voice')][.//*[contains(text(),'{nm}')]]//a"
+                    f"|(//li[contains(@class,'voice')]//*[contains(text(),'{nm}')]//ancestor-or-self::a)[1]"
+                )
+            if m_not:
+                exc = m_not.group(1)
+                return _click_xpath(
+                    f"(//*[contains(@class,'voiceChannel') or contains(@class,'voice')][not(.//*[contains(text(),'{exc}')])]//a)[1]"
+                )
+            return _click_xpath(
+                "(//*[contains(@class,'voiceChannel') or contains(@class,'voice-channel')]//a)[1]"
+                "|(//li[contains(@class,'voice')]//a)[1]"
+            )
+
+        # VOICE_MUTE_TOGGLE — step 0: join voice channel; step 1: click mute button
+        if re.search(r"toggle\s+mute|muted\s+equals", t, re.IGNORECASE):
+            if step == 0:
+                return _click_xpath(
+                    "(//*[contains(@class,'voiceChannel') or contains(@class,'voice-channel')]//a)[1]"
+                    "|(//li[contains(@class,'voice')]//a)[1]"
+                )
+            elif step == 1:
+                return _click_xpath(
+                    "//*[@aria-label='Mute' or @aria-label='Unmute' or @aria-label='Deafen']"
+                    "|//button[contains(@class,'mute') or contains(@id,'mute') or contains(@class,'microphoneButton')]"
+                )
+            return []
+
+        # SELECT_CHANNEL — click a text channel by name or first available
+        if re.search(r"select\s+(a\s+|the\s+)?channel\s+(?:from|where|named|not|that)", t, re.IGNORECASE):
+            m_eq = re.search(r"name\s+(?:equals?|is|=)\s+['\"]([^'\"]+)['\"]", prompt, re.IGNORECASE)
+            m_not = re.search(r"name\s+(?:NOT\s+equals?|is\s+NOT|does\s+NOT\s+equal)\s+['\"]([^'\"]+)['\"]", prompt, re.IGNORECASE)
+            if m_eq:
+                nm = m_eq.group(1)
+                return _click_xpath(
+                    f"//a[contains(@class,'channel') and contains(normalize-space(.),'{nm}')]"
+                    f"|//*[contains(@class,'textChannel')][.//*[contains(text(),'{nm}')]]//a"
+                )
+            if m_not:
+                exc = m_not.group(1)
+                return _click_xpath(
+                    f"(//a[contains(@class,'channel') and not(contains(normalize-space(.),'{exc}'))][not(ancestor::*[contains(@class,'voice')])])[1]"
+                    f"|(//*[contains(@class,'textChannel')][not(.//*[contains(text(),'{exc}')])]//a)[1]"
+                )
+            return _click_xpath(
+                "(//*[contains(@class,'textChannel') or contains(@class,'text-channel')]//a)[1]"
+                "|(//a[contains(@class,'channel')][not(ancestor::*[contains(@class,'voice')])])[1]"
+            )
+
+        # SELECT_DM — step 0: open DMs view; step 1: click specific conversation
+        if re.search(r"select\s+(a\s+|the\s+)?dm\b|open\s+(a\s+)?direct\s+message\b", t, re.IGNORECASE):
+            m_name = re.search(r"name\s+(?:equals?|is|=)\s+['\"]([^'\"]+)['\"]", prompt, re.IGNORECASE)
+            if step == 0:
+                return _click_xpath(
+                    "//*[@aria-label='Direct Messages' or @aria-label='Home']"
+                    "|//a[contains(@href,'/@me')]"
+                    "|//button[contains(@class,'dmButton') or contains(@class,'privateChannels')]"
+                )
+            elif step == 1:
+                if m_name:
+                    nm = m_name.group(1)
+                    return _click_xpath(
+                        f"//*[contains(@class,'privateChannel') or contains(@class,'dm')]//*[contains(text(),'{nm}')]"
+                        f"|(//a[contains(@class,'channel')]//*[contains(text(),'{nm}')])[1]"
+                    )
+                return _click_xpath("(//*[contains(@class,'privateChannel') or contains(@class,'directMessage')])[1]")
+            return []
+
+        # VIEW_DMS — open direct messages section
+        if re.search(r"view\s+(all\s+)?direct\s+messages|view\s+(all\s+)?dms\b", t, re.IGNORECASE):
+            return _click_xpath(
+                "//*[@aria-label='Direct Messages' or @aria-label='Home']"
+                "|//a[contains(@href,'/@me')]"
+                "|//button[contains(@class,'dmButton') or contains(@class,'privateChannels')]"
+            )
+
+        # SEND_MESSAGE — step 0: focus input; step 1: type; step 2: send
+        if re.search(r"send\s+a\s+message\s+(in|to|on)\s+the", t, re.IGNORECASE):
+            if step == 0:
+                return _click_xpath(
+                    "//div[@role='textbox' or contains(@class,'slateTextArea') or contains(@class,'messageInput')]"
+                    "|//div[contains(@data-slate-editor,'true')]"
+                    "|//textarea[contains(@placeholder,'Message') or contains(@placeholder,'message')]"
+                )
+            elif step == 1:
+                m_msg = re.search(r"(?:message|text|content)\s+(?:equals?|is|=|contains?)\s+['\"]([^'\"]+)['\"]", prompt, re.IGNORECASE)
+                msg = m_msg.group(1) if m_msg else "Hello!"
+                return [{"type": "TypeAction", "text": msg, "selector": {
+                    "type": "xpathSelector", "attribute": None, "case_sensitive": False,
+                    "value": "//div[@role='textbox' or contains(@class,'slateTextArea')]|//textarea[contains(@placeholder,'essage')]"
+                }}]
+            elif step == 2:
+                return _click_xpath(
+                    "//button[@aria-label='Send Message' or contains(@class,'sendButton')]"
+                    "|//button[@type='submit'][contains(@class,'button')]"
+                )
+            return []
 
     return None
 
