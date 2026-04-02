@@ -1,0 +1,18 @@
+{
+  "totalTasks": 4600,
+  "completedTasks": 712,
+  "failedTasks": 3888,
+  "successRate": "15.48",
+  "uniqueTaskTypes": 117,
+  "averageDuration": "47.39",
+  "websites": 16,
+  "uniqueMiners": 12,
+  "uniqueValidators": 3,
+  "topMiner": [
+    "samwillbepoor",
+    {
+      "total": 150,
+      "completed": 48
+    }
+  ]
+}

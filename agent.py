@@ -1,0 +1,593 @@
+"""Main agent orchestrator - the enhanced decision pipeline.
+
+Architecture: graduated complexity cascade
+0. Knowledge base lookup (pre-recorded actions)             ~varies, 0 LLM calls
+1. Quick click shortcuts (regex -> known element ID)        ~5% tasks, 0 LLM calls
+2. Search shortcuts (type into known search input)          ~10% tasks, 0 LLM calls
+3. Form shortcuts (login/reg/contact/logout detection)      ~25% tasks, 0 LLM calls
+4. LLM decision with tool use loop                          ~60% tasks, 1-3 LLM calls
+5. Fallback (scroll/wait)                                   safety net
+
+Enhancements over baseline:
+- 150+ specific task types with targeted playbooks
+- LLM tool use (list_cards, search_text, list_links, extract_forms)
+- Memory/next_goal persistence across steps
+- State delta computation for change detection
+- Cards preview on early steps
+- Knowledge base for known task shortcuts (with auto-learning)
+- Enhanced credential extraction
+- Multi-provider LLM support (OpenAI, Anthropic Claude)
+- Observability metrics (stage resolution, costs, latency)
+"""
+from __future__ import annotations
+import json
+import os
+import time
+import logging
+import threading
+
+from config import (
+    detect_website,
+    WEBSITE_HINTS,
+    TASK_PLAYBOOKS,
+    AGENT_MAX_STEPS,
+)
+from classifier import classify_task_type, classify_shortcut_type
+from constraint_parser import (
+    parse_constraints,
+    format_constraints_block,
+    extract_credentials,
+)
+from html_parser import prune_html, extract_candidates, build_page_ir, build_dom_digest
+from navigation import extract_seed
+from shortcuts import try_quick_click, try_search_shortcut, try_shortcut
+from state_tracker import StateTracker
+from llm_client import LLMClient
+from prompts import build_system_prompt, build_user_prompt
+from action_builder import parse_llm_response, build_iwa_action, WAIT_ACTION
+from tool_use import run_tool, tool_list_cards, tool_match_cards, tool_filter_table
+from metrics import AgentMetrics
+
+logger = logging.getLogger(__name__)
+
+_llm_client: LLMClient | None = None
+
+
+def _get_llm_client() -> LLMClient:
+    global _llm_client
+    if _llm_client is None:
+        _llm_client = LLMClient()
+    return _llm_client
+
+
+# ---------------------------------------------------------------------------
+# Knowledge base: pre-recorded actions for known tasks (with auto-learning)
+# ---------------------------------------------------------------------------
+
+_KB_PATH = os.path.join(os.path.dirname(__file__), "data", "baseline_actions.json")
+_KB_LOCK = threading.Lock()
+
+
+def _load_task_knowledge() -> dict[str, list[dict]]:
+    kb: dict[str, list[dict]] = {}
+    try:
+        with open(_KB_PATH, "r", encoding="utf-8") as f:
+            for entry in json.load(f):
+                if entry.get("status") != "success" or not entry.get("response"):
+                    continue
+                tid = (entry.get("task") or {}).get("taskId", "")
+                acts = entry["response"].get("actions")
+                if tid and isinstance(acts, list) and len(acts) > 1:
+                    kb[tid] = acts[1:]
+    except Exception:
+        pass
+    return kb
+
+
+_TASK_KNOWLEDGE = _load_task_knowledge()
+AgentMetrics().set_kb_size(len(_TASK_KNOWLEDGE))
+
+# ---------------------------------------------------------------------------
+# Auto-learning: persist successful multi-step task completions to KB
+# ---------------------------------------------------------------------------
+
+# Track per-task accumulated actions for learning
+_TASK_ACTION_LOG: dict[str, dict] = {}  # task_id -> {actions: [...], prompt: str, website: str, use_case: str}
+_MAX_ACTION_LOG_ENTRIES = 50  # evict oldest if exceeded
+_MAX_KB_ENTRIES = 500  # cap in-memory KB size
+_MAX_KB_FILE_ENTRIES = 1000  # cap on-disk KB size
+
+
+def _start_action_log(task_id: str, prompt: str, website: str, use_case: str) -> None:
+    # Evict oldest entries if log is getting too large
+    while len(_TASK_ACTION_LOG) >= _MAX_ACTION_LOG_ENTRIES:
+        oldest = next(iter(_TASK_ACTION_LOG))
+        del _TASK_ACTION_LOG[oldest]
+    _TASK_ACTION_LOG[task_id] = {
+        "actions": [],
+        "prompt": prompt,
+        "website": website,
+        "use_case": use_case,
+    }
+
+
+def _append_action_log(task_id: str, actions: list[dict]) -> None:
+    if task_id in _TASK_ACTION_LOG:
+        _TASK_ACTION_LOG[task_id]["actions"].extend(actions)
+
+
+def auto_learn_task(task_id: str, success: bool = True) -> None:
+    """Persist a completed task's action sequence into the knowledge base.
+
+    Called externally (e.g. via /learn endpoint) or internally when a task
+    completes with 'done' action.
+    """
+    if not success or task_id not in _TASK_ACTION_LOG:
+        _TASK_ACTION_LOG.pop(task_id, None)
+        return
+
+    log = _TASK_ACTION_LOG.pop(task_id)
+    actions = log["actions"]
+    if not actions or len(actions) < 2:
+        return
+
+    # Already in KB
+    if task_id in _TASK_KNOWLEDGE:
+        return
+
+    # Cap in-memory KB: evict oldest entries if at limit
+    while len(_TASK_KNOWLEDGE) >= _MAX_KB_ENTRIES:
+        oldest = next(iter(_TASK_KNOWLEDGE))
+        del _TASK_KNOWLEDGE[oldest]
+
+    # Add to in-memory KB
+    _TASK_KNOWLEDGE[task_id] = actions
+    AgentMetrics().record_auto_learn()
+    AgentMetrics().set_kb_size(len(_TASK_KNOWLEDGE))
+    logger.info(f"Auto-learned task {task_id}: {len(actions)} actions ({log['use_case']})")
+
+    # Persist to disk in background
+    def _persist():
+        with _KB_LOCK:
+            try:
+                with open(_KB_PATH, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+            except Exception:
+                data = []
+
+            # Check not already in file
+            existing_ids = {
+                (e.get("task") or {}).get("taskId", "") for e in data
+            }
+            if task_id in existing_ids:
+                return
+
+            # Cap on-disk KB: drop oldest auto-learned entries first
+            if len(data) >= _MAX_KB_FILE_ENTRIES:
+                # Remove oldest auto-learned entries to make room
+                kept = [e for e in data if e.get("source") != "auto_learned"]
+                auto = [e for e in data if e.get("source") == "auto_learned"]
+                # Keep only the most recent half of auto-learned
+                auto = auto[len(auto) // 2:]
+                data = kept + auto
+                logger.info(f"KB file pruned to {len(data)} entries")
+
+            entry = {
+                "task": {
+                    "taskId": task_id,
+                    "website": log["website"],
+                    "useCase": log["use_case"],
+                    "prompt": log["prompt"],
+                },
+                "response": {
+                    "actions": [{"type": "NavigateAction", "url": log["website"]}] + actions
+                },
+                "status": "success",
+                "source": "auto_learned",
+            }
+            data.append(entry)
+
+            with open(_KB_PATH, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+            logger.info(f"Persisted auto-learned task {task_id} to KB (total: {len(data)})")
+
+    threading.Thread(target=_persist, daemon=True).start()
+
+
+def _record_actions(task_id: str, actions: list[dict], url: str, step: int) -> None:
+    """Record all returned actions into state tracker."""
+    for i, act in enumerate(actions):
+        sel_val = ""
+        sel = act.get("selector", {})
+        if isinstance(sel, dict):
+            sel_val = sel.get("value", "")
+        text = act.get("text", "")
+        StateTracker.record_action(task_id, act.get("type", ""), sel_val, url, step + i, text)
+        if act.get("type") == "TypeAction" and sel_val:
+            StateTracker.record_filled_field(task_id, sel_val)
+
+
+async def handle_act(
+    task_id: str | None,
+    prompt: str | None,
+    url: str | None,
+    snapshot_html: str | None,
+    screenshot: str | None,
+    step_index: int | None,
+    web_project_id: str | None,
+    history: list | None = None,
+    relevant_data: dict | None = None,
+) -> list[dict]:
+    """Main entry point called by /act endpoint."""
+    if not prompt or not url:
+        logger.warning("Missing prompt or url")
+        return [WAIT_ACTION]
+
+    step = step_index or 0
+    task = task_id or "unknown"
+    website = web_project_id or detect_website(url)
+    seed = extract_seed(url)
+    state = StateTracker.get_or_create(task)
+    metrics = AgentMetrics()
+    step_start = time.time()
+
+    # Initialize on step 0
+    if step == 0:
+        state.constraints = parse_constraints(prompt)
+        state.task_type = classify_task_type(prompt)
+        state.login_done = False
+        state.history.clear()
+        state.filled_fields.clear()
+        state.memory = ""
+        state.next_goal = ""
+        state.prev_url = ""
+        state.prev_summary = ""
+        state.prev_sig_set = []
+        state.last_sig = ""
+        state.repeat_count = 0
+        StateTracker.auto_cleanup()
+        metrics.record_new_task()
+        # Start action log for auto-learning
+        _start_action_log(task, prompt, url, state.task_type)
+
+    # ===================================================================
+    # STAGE 0: Knowledge base lookup (skip LLM for known tasks)
+    # ===================================================================
+    known_actions = _TASK_KNOWLEDGE.get(task)
+    if known_actions:
+        latency = (time.time() - step_start) * 1000
+        metrics.record_resolution("kb_lookup", website, state.task_type, latency)
+        metrics.record_kb_hit()
+        if step < len(known_actions):
+            return [known_actions[step]]
+        return []
+
+    # ===================================================================
+    # Hard step cap: force done after max steps
+    # ===================================================================
+    max_steps = int(os.getenv("AGENT_MAX_STEPS", str(AGENT_MAX_STEPS)))
+    if step >= max_steps:
+        return [{"type": "IdleAction"}]
+
+    # ===================================================================
+    # STAGE 1: Quick click shortcuts (no HTML parsing needed)
+    # ===================================================================
+    quick = try_quick_click(prompt, url, seed, step)
+    if quick is not None:
+        latency = (time.time() - step_start) * 1000
+        metrics.record_resolution("quick_click", website, state.task_type, latency)
+        logger.info(f"Quick click: {len(quick)} actions")
+        _record_actions(task, quick, url, step)
+        _append_action_log(task, quick)
+        return quick
+
+    # ===================================================================
+    # STAGE 2: Search shortcut
+    # ===================================================================
+    search = try_search_shortcut(prompt, website)
+    if search is not None:
+        latency = (time.time() - step_start) * 1000
+        metrics.record_resolution("search_shortcut", website, state.task_type, latency)
+        logger.info(f"Search shortcut: {len(search)} actions")
+        _record_actions(task, search, url, step)
+        _append_action_log(task, search)
+        return search
+
+    # ===================================================================
+    # Parse HTML and extract candidates
+    # ===================================================================
+    if snapshot_html and snapshot_html.strip():
+        soup = prune_html(snapshot_html)
+        candidates = extract_candidates(soup)
+    else:
+        soup = None
+        candidates = []
+
+    # ===================================================================
+    # STAGE 3: Form-based shortcuts (login/reg/contact/logout)
+    # ===================================================================
+    shortcut_type = classify_shortcut_type(prompt)
+
+    # For login_then_* tasks: do login shortcut on early steps, then fall to LLM
+    if state.task_type.startswith("LOGIN_THEN_") and not state.login_done:
+        shortcut_type = "login"
+
+    # Pre-compute credentials early so shortcuts can use them
+    _creds = extract_credentials(prompt)
+    if relevant_data and isinstance(relevant_data, dict):
+        for k, v in relevant_data.items():
+            if isinstance(v, str) and v:
+                _creds.setdefault(str(k), str(v))
+    # Add all "equals" constraints as directly usable field values
+    for c in state.constraints:
+        if c.operator == "equals" and isinstance(c.value, str):
+            _creds.setdefault(c.field, c.value)
+
+    _has_not_constraints = any(
+        c.operator in ("not_equals", "not_contains", "not_in")
+        for c in state.constraints
+    )
+
+    if shortcut_type and soup and candidates:
+        shortcut_actions = try_shortcut(
+            shortcut_type, candidates, soup, step,
+            creds=_creds, has_not_constraints=_has_not_constraints,
+        )
+        if shortcut_actions is not None:
+            latency = (time.time() - step_start) * 1000
+            metrics.record_resolution(f"form_shortcut:{shortcut_type}", website, state.task_type, latency)
+            logger.info(f"Shortcut '{shortcut_type}': {len(shortcut_actions)} actions")
+            _record_actions(task, shortcut_actions, url, step)
+            _append_action_log(task, shortcut_actions)
+            if shortcut_type == "login":
+                StateTracker.mark_login_done(task)
+            return shortcut_actions
+
+    # ===================================================================
+    # No candidates = page still loading or empty
+    # ===================================================================
+    if not candidates:
+        logger.warning("No candidates - page may still be loading")
+        StateTracker.record_action(task, "WaitAction", "", url, step)
+        return [{"type": "WaitAction", "time_seconds": 2}]
+
+    # ===================================================================
+    # STAGE 4: Stuck recovery (before LLM to save tokens)
+    # ===================================================================
+    loop_warning = StateTracker.detect_loop(task, url)
+    stuck_warning = StateTracker.detect_stuck(task, url)
+
+    if stuck_warning and step >= 3:
+        recent = state.history[-2:] if len(state.history) >= 2 else []
+        all_scrolls = all(a.action_type == "ScrollAction" for a in recent) if recent else False
+        if not all_scrolls:
+            logger.info("Stuck recovery: auto-scroll")
+            StateTracker.record_action(task, "ScrollAction", "", url, step)
+            return [{"type": "ScrollAction", "down": True}]
+
+    # ===================================================================
+    # STAGE 5: Build page IR and context
+    # ===================================================================
+    page_ir = build_page_ir(soup, url, candidates)
+    page_ir_text = page_ir.raw_text
+
+    # DOM digest for early steps
+    dom_digest = ""
+    if soup and step <= 1:
+        dom_digest = build_dom_digest(soup)
+
+    # Compute state delta
+    page_summary = ""
+    if soup:
+        page_summary = (soup.get_text(separator=" ", strip=True) or "")[:400]
+    state_delta = StateTracker.compute_state_delta(task, url, page_summary, candidates)
+
+    # Cards preview for early steps
+    cards_preview = ""
+    if step <= 2:
+        try:
+            cards_obj = tool_list_cards(candidates=candidates, max_cards=6, max_text=120)
+            if cards_obj.get("ok") and cards_obj.get("cards"):
+                cards_preview = json.dumps(cards_obj["cards"], ensure_ascii=True)
+                if len(cards_preview) > 600:
+                    cards_preview = cards_preview[:597] + "..."
+        except Exception:
+            cards_preview = ""
+
+    # Auto constraint matching — pre-identifies the right item WITHOUT an LLM tool call.
+    # Result is injected directly into the prompt so any model benefits immediately.
+    auto_matched = ""
+    if state.constraints and candidates:
+        try:
+            constraint_dicts = [
+                {"field": c.field, "operator": c.operator, "value": str(c.value)}
+                for c in state.constraints
+            ]
+            # Try card-based matching first
+            mc = tool_match_cards(
+                candidates=candidates,
+                constraints=constraint_dicts,
+                html=snapshot_html or "",
+            )
+            if mc.get("ok") and mc.get("count", 0) > 0:
+                lines = [f"AUTO_MATCHED {mc['count']} item(s) satisfy ALL constraints:"]
+                for m in mc["matches"][:3]:
+                    cids = m.get("candidate_ids", [])
+                    txt = (m.get("card_text") or "")[:160]
+                    first_act = (m.get("actions") or [{}])[0]
+                    cid = first_act.get("candidate_id", cids[0] if cids else "?")
+                    act_text = first_act.get("text", "")
+                    lines.append(f"  candidate_id={cid} ({act_text}): {txt}")
+                auto_matched = "\n".join(lines)
+            # Fallback: table-row matching
+            if not auto_matched and snapshot_html:
+                ft = tool_filter_table(html=snapshot_html, constraints=constraint_dicts)
+                if ft.get("ok") and ft.get("count", 0) > 0:
+                    lines = [f"AUTO_MATCHED {ft['count']} row(s) satisfy ALL constraints:"]
+                    for m in ft["matches"][:3]:
+                        data = m.get("data", {})
+                        summary = data.get("summary") or " | ".join(
+                            f"{k}={v}" for k, v in list(data.items())[:5]
+                        )
+                        row_actions = m.get("actions", [])
+                        act_hint = f" → click: '{row_actions[0]['text']}'" if row_actions else ""
+                        lines.append(f"  {summary[:160]}{act_hint}")
+                    auto_matched = "\n".join(lines)
+        except Exception:
+            auto_matched = ""
+
+    # Extra stuck hint from repeat detection
+    extra_hint = ""
+    repeat_count = StateTracker.get_repeat_count(task)
+    if repeat_count >= 2:
+        extra_hint = "You appear stuck on the same URL after repeating an action. Choose a different element or scroll."
+
+    # Previous memory/next_goal
+    prev_memory, prev_next_goal = StateTracker.get_memory(task)
+
+    # Prepare prompt layers
+    action_history = StateTracker.get_recent_history(task, count=4)
+    filled_fields = StateTracker.get_filled_fields(task)
+    constraints_block = format_constraints_block(state.constraints)
+    website_hint = WEBSITE_HINTS.get(website, "") if website else ""
+    playbook = TASK_PLAYBOOKS.get(state.task_type, TASK_PLAYBOOKS.get("GENERAL", ""))
+
+    # Reuse credentials computed earlier (before shortcuts)
+    creds = _creds
+
+    creds_block = ""
+    if creds:
+        creds_block = "TASK_CREDENTIALS (use EXACTLY as-is, no modifications - including spaces):\n"
+        for k, v in creds.items():
+            creds_block += f"  {k}: '{v}'\n"
+
+    # ===================================================================
+    # STAGE 6: LLM decision with tool use loop
+    # ===================================================================
+    try:
+        client = _get_llm_client()
+        system_msg = build_system_prompt()
+        user_msg = build_user_prompt(
+            prompt=prompt,
+            page_ir_text=page_ir_text,
+            step_index=step,
+            task_type=state.task_type,
+            action_history=action_history,
+            website=website,
+            website_hint=website_hint,
+            constraints_block=constraints_block,
+            credentials_info=creds_block,
+            playbook=playbook,
+            loop_warning=loop_warning,
+            stuck_warning=stuck_warning,
+            filled_fields=filled_fields,
+            dom_digest=dom_digest,
+            memory=prev_memory,
+            next_goal=prev_next_goal,
+            state_delta=state_delta,
+            cards_preview=cards_preview,
+            extra_hint=extra_hint,
+            matched_items=auto_matched,
+        )
+
+        messages = [
+            {"role": "system", "content": system_msg},
+            {"role": "user", "content": user_msg},
+        ]
+
+        max_tool_calls = int(os.getenv("AGENT_MAX_TOOL_CALLS", "2"))
+        tool_calls_made = 0
+        decision = None
+
+        # Use a stronger model for complex multi-condition tasks.
+        # Defaults to the validator's own model so upgrade is purely opt-in:
+        # validator must set COMPLEX_MODEL=gpt-4o to enable escalation.
+        _n_constraints = len(state.constraints)
+        _complex_model: str | None = None
+        if _n_constraints >= 3:
+            _complex_model = os.getenv("COMPLEX_MODEL", client.model)
+            if _complex_model == client.model:
+                _complex_model = None  # same model already, no escalation needed
+
+        for _ in range(max_tool_calls + 2):
+            content = client.chat(task, messages, model_override=_complex_model)
+            parsed = parse_llm_response(content)
+
+            if parsed is None:
+                # Retry with stronger instruction
+                messages.append({"role": "assistant", "content": content})
+                messages.append({"role": "user", "content": "Return ONLY valid JSON. No markdown."})
+                content = client.chat(task, messages, model_override=_complex_model)
+                parsed = parse_llm_response(content)
+
+            if parsed is None:
+                break
+
+            # Check if it's a tool call
+            tool_name = parsed.get("tool")
+            if tool_name and not parsed.get("action") and tool_calls_made < max_tool_calls:
+                tool_args = parsed.get("args") if isinstance(parsed.get("args"), dict) else {}
+                tool_calls_made += 1
+                try:
+                    result = run_tool(
+                        tool_name, tool_args,
+                        html=snapshot_html or "",
+                        url=url,
+                        candidates=candidates,
+                    )
+                except Exception as e:
+                    result = {"ok": False, "error": str(e)[:200]}
+
+                messages.append({"role": "assistant", "content": json.dumps({"tool": tool_name, "args": tool_args}, ensure_ascii=True)})
+                messages.append({"role": "user", "content": f"TOOL_RESULT {tool_name}: " + json.dumps(result, ensure_ascii=True)})
+                continue
+
+            # It's an action decision
+            decision = parsed
+            break
+
+        if decision is None:
+            # Total failure: fallback
+            if step < 5 and candidates:
+                fallback = build_iwa_action({"action": "click", "candidate_id": 0}, candidates, url, seed)
+            else:
+                fallback = {"type": "ScrollAction", "down": True}
+            _record_actions(task, [fallback], url, step)
+            return [fallback]
+
+        # Save memory/next_goal from LLM response
+        mem = decision.get("memory")
+        ng = decision.get("next_goal")
+        if isinstance(mem, str) or isinstance(ng, str):
+            StateTracker.update_memory(task, mem or "", ng or "")
+
+    except Exception as e:
+        logger.error(f"LLM call failed: {e}")
+        if step < 5 and candidates:
+            fallback = build_iwa_action({"action": "click", "candidate_id": 0}, candidates, url, seed)
+        else:
+            fallback = {"type": "ScrollAction", "down": True}
+        _record_actions(task, [fallback], url, step)
+        return [fallback]
+
+    # ===================================================================
+    # STAGE 7: Build action from LLM decision
+    # ===================================================================
+    action = build_iwa_action(decision, candidates, url, seed)
+
+    # Update action signature for repeat detection
+    sig = f"{decision.get('action')}:{decision.get('candidate_id')}"
+    StateTracker.update_action_sig(task, url, sig)
+
+    latency = (time.time() - step_start) * 1000
+    metrics.record_resolution("llm_decision", website, state.task_type, latency)
+    metrics.record_llm_usage(client.total_cost, client.total_calls)
+
+    _record_actions(task, [action], url, step)
+    _append_action_log(task, [action])
+
+    # Auto-learn: if LLM chose "done", persist action sequence to KB
+    if decision.get("action") == "done":
+        auto_learn_task(task, success=True)
+
+    return [action]
